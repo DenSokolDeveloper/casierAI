@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { Category } from '../categories/category.schema';
 
 export type PriceType = 'fixed' | 'perWeight';
 
@@ -10,8 +11,8 @@ export class Product {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  category: string;
+  @Prop({ type: Types.ObjectId, ref: Category.name, required: true })
+  categoryId: Types.ObjectId;
 
   @Prop({ required: true, enum: ['fixed', 'perWeight'], default: 'fixed' })
   priceType: PriceType;

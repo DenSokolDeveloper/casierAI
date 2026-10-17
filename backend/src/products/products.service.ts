@@ -16,11 +16,15 @@ export class ProductsService {
   }
 
   findAll() {
-    return this.productModel.find().sort({ category: 1, name: 1 }).exec();
+    return this.productModel
+      .find()
+      .populate('categoryId')
+      .sort({ name: 1 })
+      .exec();
   }
 
   async findOne(id: string) {
-    const product = await this.productModel.findById(id).exec();
+    const product = await this.productModel.findById(id).populate('categoryId').exec();
     if (!product) {
       throw new NotFoundException(`Product ${id} not found`);
     }

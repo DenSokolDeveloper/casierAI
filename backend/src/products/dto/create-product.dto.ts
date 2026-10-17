@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsIn,
+  IsMongoId,
   IsNumber,
   IsOptional,
   IsString,
@@ -12,8 +13,8 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
-  @IsString()
-  category: string;
+  @IsMongoId()
+  categoryId: string;
 
   @IsIn(['fixed', 'perWeight'])
   priceType: PriceType;

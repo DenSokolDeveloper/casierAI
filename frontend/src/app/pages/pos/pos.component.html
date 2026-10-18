@@ -1,0 +1,147 @@
+<div class="pos-page">
+  <header>
+    <div>
+      <h1>CasierAI</h1>
+      @if (authService.currentUser(); as user) {
+        <p>{{ user.name }} · {{ user.role === 'owner' ? 'Владелец' : 'Кассир' }}</p>
+      }
+    </div>
+    <div class="header-actions">
+      @if (authService.currentUser()?.role === 'owner') {
+        <a routerLink="/admin">Админка</a>
+      }
+      <button type="button" (click)="authService.logout()">Выйти</button>
+    </div>
+  </header>
+
+  <section class="camera-section">
+    <div class="camera-frame">
+      <video #video playsinline muted></video>
+      <canvas #canvas hidden></canvas>
+    </div>
+
+    @if (cameraError()) {
+      <p class="error">{{ cameraError() }}</p>
+    }
+
+    <div class="camera-actions">
+      <button type="button" class="primary" [disabled]="isCapturing()" (click)="capturePhoto()">
+        {{ isCapturing() ? 'Распознаём…' : '📷 Снять товар' }}
+      </button>
+      <label class="file-fallback">
+        Загрузить фото
+        <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
+      </label>
+    </div>
+
+    @if (recognizeMessage()) {
+      <p class="hint">{{ recognizeMessage() }}</p>
+    }
+
+    @if (candidates().length > 0) {
+      <ul class="candidates">
+        @for (candidate of candidates(); track candidate.productId) {
+          <li>
+            <button type="button" (click)="selectCandidate(candidate)">
+              <span class="name">{{ candidate.name }}</span>
+              <span class="price">
+                {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
+              </span>
+              <span class="confidence">{{ (candidate.confidence * 100) | number: '1.0-0' }}%</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  @if (pendingWeightItem(); as item) {
+    <div class="weight-dialog">
+      <p>{{ item.name }} — укажите вес, кг</p>
+      <input type="number" min="0.001" step="0.001" [(ngModel)]="weightInputKg" />
+      <div class="actions">
+        <button type="button" class="primary" [disabled]="weightInputKg <= 0" (click)="confirmWeight()">
+          Добавить
+        </button>
+        <button type="button" (click)="cancelWeight()">Отмена</button>
+      </div>
+    </div>
+  }
+
+  <section class="manual-section">
+    <button type="button" class="link" (click)="toggleManualSearch()">
+      {{ manualSearchOpen() ? 'Скрыть ручной поиск' : 'Добавить товар вручную' }}
+    </button>
+
+    @if (manualSearchOpen()) {
+      <div class="manual-search">
+        <input type="text" placeholder="Поиск по названию…" [(ngModel)]="manualSearchTerm" />
+        <ul>
+          @for (product of manualResults(); track product._id) {
+            <li>
+              <button type="button" (click)="selectManualProduct(product)">
+                <span class="name">{{ product.name }}</span>
+                <span class="price">
+                  {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </section>
+
+  <section class="cart-section">
+    <h2>Чек</h2>
+    @if (cart().length === 0) {
+      <p class="empty">Отсканируйте товар, чтобы добавить его в чек.</p>
+    } @else {
+      <ul class="cart">
+        @for (item of cart(); track item.productId + '-' + $index; let i = $index) {
+          <li>
+            <div class="info">
+              <span class="name">{{ item.name }}</span>
+              <span class="price">{{ item.unitPrice }} × {{ item.qty }} {{ item.unit }}</span>
+            </div>
+            @if (item.priceType === 'fixed') {
+              <div class="qty-controls">
+                <button type="button" (click)="changeQty(i, -1)">−</button>
+                <span>{{ item.qty }}</span>
+                <button type="button" (click)="changeQty(i, 1)">+</button>
+              </div>
+            }
+            <span class="line-total">{{ item.lineTotal }}</span>
+            <button type="button" class="remove" (click)="removeItem(i)">✕</button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (checkoutError()) {
+      <p class="error">{{ checkoutError() }}</p>
+    }
+
+    <div class="total-bar">
+      <span>Итого</span>
+      <span class="total-amount">{{ total() }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="checkout"
+      [disabled]="cart().length === 0 || isCheckingOut()"
+      (click)="checkout()"
+    >
+      {{ isCheckingOut() ? 'Оформляем…' : 'Оформить продажу' }}
+    </button>
+  </section>
+
+  @if (lastReceiptTotal(); as receiptTotal) {
+    <div class="receipt-dialog">
+      <p>Продажа оформлена. Итого: <strong>{{ receiptTotal }}</strong></p>
+      <p class="hint">Введите эту сумму в терминал оплаты.</p>
+      <button type="button" (click)="dismissReceipt()">Следующий покупатель</button>
+    </div>
+  }
+</div>

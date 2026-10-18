@@ -1,0 +1,144 @@
+<div class="import-page">
+  <mat-card class="upload-card">
+    <h2>{{ 'admin.import.title' | translate }}</h2>
+    <p class="hint">{{ 'admin.import.hint' | translate }}</p>
+
+    <div class="upload-row">
+      <input
+        type="file"
+        accept=".xlsx,.xls,.csv"
+        (change)="onFileSelected($event)"
+        #fileInput
+      />
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="!selectedFile() || isUploading()"
+        (click)="upload()"
+      >
+        @if (isUploading()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <ng-container>{{ 'admin.import.previewButton' | translate }}</ng-container>
+        }
+      </button>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() | translate }}</p>
+    }
+
+    @if (successResult()) {
+      <p class="success">
+        {{
+          'admin.import.commitSuccess'
+            | translate
+              : {
+                  products: successResult()!.createdProducts,
+                  categories: successResult()!.createdCategories,
+                }
+        }}
+      </p>
+    }
+  </mat-card>
+
+  @if (rows().length > 0) {
+    @if (aiUsed()) {
+      <p class="ai-note">
+        <mat-icon inline="true">auto_awesome</mat-icon>
+        {{ 'admin.import.aiNote' | translate }}
+      </p>
+    }
+
+    @if (parseErrors().length > 0) {
+      <mat-card class="errors-card">
+        <h3>{{ 'admin.import.skippedTitle' | translate }}</h3>
+        <ul>
+          @for (error of parseErrors(); track error) {
+            <li>{{ error }}</li>
+          }
+        </ul>
+      </mat-card>
+    }
+
+    <mat-card class="table-card">
+      <div class="table-actions">
+        <button mat-button (click)="toggleAll(true)">
+          {{ 'admin.import.selectAll' | translate }}
+        </button>
+        <button mat-button (click)="toggleAll(false)">
+          {{ 'admin.import.selectNone' | translate }}
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="rows()" class="preview-table">
+        <ng-container matColumnDef="include">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox [(ngModel)]="row.include" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.import.colName' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.import.colCategory' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-form-field subscriptSizing="dynamic">
+              <input matInput [(ngModel)]="row.categoryName" />
+            </mat-form-field>
+            @if (row.categoryIsNew) {
+              <mat-chip class="new-chip">{{ 'admin.import.newCategory' | translate }}</mat-chip>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.import.colPrice' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-form-field subscriptSizing="dynamic">
+              <input matInput type="number" [(ngModel)]="row.price" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="unit">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.import.colUnit' | translate }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.unit }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stockQty">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.import.colStock' | translate }}</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-form-field subscriptSizing="dynamic">
+              <input matInput type="number" [(ngModel)]="row.stockQty" />
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <div class="commit-row">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="includedCount === 0 || isCommitting()"
+          (click)="commit()"
+        >
+          @if (isCommitting()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            <ng-container>
+              {{ 'admin.import.commitButton' | translate: { count: includedCount } }}
+            </ng-container>
+          }
+        </button>
+      </div>
+    </mat-card>
+  }
+</div>

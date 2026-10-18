@@ -27,6 +27,10 @@
       <mat-icon>groups</mat-icon>
       {{ 'admin.nav.users' | translate }}
     </a>
+    <a mat-tab-link routerLink="import" routerLinkActive #importLink="routerLinkActive" [active]="importLink.isActive">
+      <mat-icon>upload_file</mat-icon>
+      {{ 'admin.nav.import' | translate }}
+    </a>
   </nav>
   <mat-tab-nav-panel #tabPanel>
     <div class="admin-content">

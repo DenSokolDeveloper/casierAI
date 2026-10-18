@@ -1,0 +1,90 @@
+.import-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-card {
+  padding: 20px;
+
+  h2 {
+    margin: 0 0 4px;
+  }
+
+  .hint {
+    margin: 0 0 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.upload-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.error {
+  color: var(--mat-sys-error);
+  margin-top: 12px;
+}
+
+.success {
+  color: var(--mat-sys-tertiary);
+  margin-top: 12px;
+}
+
+.ai-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+}
+
+.errors-card {
+  padding: 16px 20px;
+
+  h3 {
+    margin: 0 0 8px;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+}
+
+.table-card {
+  padding: 16px 20px;
+  overflow-x: auto;
+}
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.preview-table {
+  width: 100%;
+
+  mat-form-field {
+    width: 100%;
+    max-width: 160px;
+  }
+}
+
+.new-chip {
+  margin-left: 8px;
+  font-size: 11px;
+  min-height: 22px;
+  background-color: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.commit-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

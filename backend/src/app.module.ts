@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { RecognitionModule } from './recognition/recognition.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ImportModule } from './import/import.module';
 import { User, UserSchema } from './users/user.schema';
 import { Product, ProductSchema } from './products/product.schema';
 import { Category, CategorySchema } from './categories/category.schema';
@@ -38,6 +39,7 @@ import { DataMigrationService } from './common/data-migration.service';
     TransactionsModule,
     RecognitionModule,
     DashboardModule,
+    ImportModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataMigrationService],

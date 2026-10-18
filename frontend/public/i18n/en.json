@@ -62,7 +62,8 @@
       "dashboard": "Dashboard",
       "products": "Products",
       "categories": "Categories",
-      "users": "Staff"
+      "users": "Staff",
+      "import": "Import"
     },
     "dashboard": {
       "loadError": "Could not load the dashboard",
@@ -132,6 +133,25 @@
       "addButton": "Add staff member",
       "empty": "No users yet.",
       "confirmDelete": "Delete user \"{{name}}\" ({{email}})?"
+    },
+    "import": {
+      "title": "Import products",
+      "hint": "Upload a spreadsheet (xlsx, xls or csv) with your product list. Rows without a category column will have one assigned automatically by AI.",
+      "previewButton": "Preview",
+      "previewError": "Could not process the file",
+      "commitError": "Could not import the products",
+      "commitSuccess": "Created {{products}} products and {{categories}} new categories",
+      "aiNote": "Categories for rows without one were assigned automatically by AI — review them before importing.",
+      "skippedTitle": "Skipped rows",
+      "selectAll": "Select all",
+      "selectNone": "Select none",
+      "colName": "Name",
+      "colCategory": "Category",
+      "colPrice": "Price",
+      "colUnit": "Unit",
+      "colStock": "Stock",
+      "newCategory": "new",
+      "commitButton": "Import ({{count}})"
     }
   }
 }

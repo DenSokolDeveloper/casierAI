@@ -62,7 +62,8 @@
       "dashboard": "Pulpit",
       "products": "Produkty",
       "categories": "Kategorie",
-      "users": "Pracownicy"
+      "users": "Pracownicy",
+      "import": "Import"
     },
     "dashboard": {
       "loadError": "Nie udało się załadować pulpitu",
@@ -132,6 +133,25 @@
       "addButton": "Dodaj pracownika",
       "empty": "Brak użytkowników.",
       "confirmDelete": "Usunąć użytkownika \"{{name}}\" ({{email}})?"
+    },
+    "import": {
+      "title": "Import produktów",
+      "hint": "Prześlij arkusz (xlsx, xls lub csv) z listą produktów. Dla wierszy bez kolumny kategorii kategoria zostanie przypisana automatycznie przez AI.",
+      "previewButton": "Podgląd",
+      "previewError": "Nie udało się przetworzyć pliku",
+      "commitError": "Nie udało się zaimportować produktów",
+      "commitSuccess": "Utworzono {{products}} produktów i {{categories}} nowych kategorii",
+      "aiNote": "Kategorie dla wierszy bez podanej kategorii zostały przypisane automatycznie przez AI — sprawdź je przed importem.",
+      "skippedTitle": "Pominięte wiersze",
+      "selectAll": "Wybierz wszystkie",
+      "selectNone": "Odznacz wszystkie",
+      "colName": "Nazwa",
+      "colCategory": "Kategoria",
+      "colPrice": "Cena",
+      "colUnit": "Jednostka",
+      "colStock": "Stan",
+      "newCategory": "nowa",
+      "commitButton": "Importuj ({{count}})"
     }
   }
 }

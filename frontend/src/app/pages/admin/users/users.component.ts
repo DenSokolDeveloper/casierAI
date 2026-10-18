@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { UsersService } from '../../../core/services/users.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ManagedUser } from '../../../core/models/user.models';
@@ -28,6 +29,7 @@ import { ManagedUser } from '../../../core/models/user.models';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    TranslatePipe,
   ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
@@ -36,6 +38,7 @@ export class UsersComponent implements OnInit {
   private readonly usersService = inject(UsersService);
   protected readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
 
   protected readonly users = signal<ManagedUser[]>([]);
   protected readonly isLoading = signal(false);
@@ -62,7 +65,7 @@ export class UsersComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Не удалось загрузить список пользователей');
+        this.errorMessage.set('admin.users.loadError');
         this.isLoading.set(false);
       },
     });
@@ -90,9 +93,7 @@ export class UsersComponent implements OnInit {
       error: (err) => {
         this.isCreating.set(false);
         this.errorMessage.set(
-          err?.status === 409
-            ? 'Пользователь с таким email уже существует'
-            : 'Не удалось создать пользователя',
+          err?.status === 409 ? 'admin.users.errorConflict' : 'admin.users.createError',
         );
       },
     });
@@ -100,15 +101,19 @@ export class UsersComponent implements OnInit {
 
   remove(user: ManagedUser): void {
     if (user._id === this.authService.currentUser()?.id) {
-      this.errorMessage.set('Нельзя удалить свой собственный аккаунт');
+      this.errorMessage.set('admin.users.selfDeleteError');
       return;
     }
-    if (!confirm(`Удалить пользователя "${user.name}" (${user.email})?`)) {
+    const confirmMessage = this.translate.instant('admin.users.confirmDelete', {
+      name: user.name,
+      email: user.email,
+    });
+    if (!confirm(confirmMessage)) {
       return;
     }
     this.usersService.remove(user._id).subscribe({
       next: () => this.load(),
-      error: () => this.errorMessage.set('Не удалось удалить пользователя'),
+      error: () => this.errorMessage.set('admin.users.deleteError'),
     });
   }
 }

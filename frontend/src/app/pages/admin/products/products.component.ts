@@ -10,6 +10,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductsService } from '../../../core/services/products.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category, PriceType, Product } from '../../../core/models/catalog.models';
@@ -28,6 +29,7 @@ import { Category, PriceType, Product } from '../../../core/models/catalog.model
     MatTableModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    TranslatePipe,
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
@@ -36,6 +38,7 @@ export class ProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
 
   protected readonly products = signal<Product[]>([]);
   protected readonly categories = signal<Category[]>([]);
@@ -60,7 +63,7 @@ export class ProductsComponent implements OnInit {
   ngOnInit(): void {
     this.categoriesService.list().subscribe({
       next: (categories) => this.categories.set(categories),
-      error: () => this.errorMessage.set('Не удалось загрузить категории'),
+      error: () => this.errorMessage.set('admin.products.loadCategoriesError'),
     });
     this.load();
   }
@@ -73,7 +76,7 @@ export class ProductsComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Не удалось загрузить товары');
+        this.errorMessage.set('admin.products.loadError');
         this.isLoading.set(false);
       },
     });
@@ -159,7 +162,7 @@ export class ProductsComponent implements OnInit {
 
     request.subscribe({
       next: (product) => this.afterSave(product._id),
-      error: () => this.errorMessage.set('Не удалось сохранить товар'),
+      error: () => this.errorMessage.set('admin.products.saveError'),
     });
   }
 
@@ -176,7 +179,7 @@ export class ProductsComponent implements OnInit {
         this.load();
       },
       error: () => {
-        this.errorMessage.set('Товар сохранён, но не удалось загрузить фото');
+        this.errorMessage.set('admin.products.photoError');
         this.cancelEdit();
         this.load();
       },
@@ -184,12 +187,15 @@ export class ProductsComponent implements OnInit {
   }
 
   remove(product: Product): void {
-    if (!confirm(`Удалить товар "${product.name}"?`)) {
+    const confirmMessage = this.translate.instant('admin.products.confirmDelete', {
+      name: product.name,
+    });
+    if (!confirm(confirmMessage)) {
       return;
     }
     this.productsService.remove(product._id).subscribe({
       next: () => this.load(),
-      error: () => this.errorMessage.set('Не удалось удалить товар'),
+      error: () => this.errorMessage.set('admin.products.deleteError'),
     });
   }
 }

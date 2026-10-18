@@ -7,7 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-register',
@@ -20,6 +22,8 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    TranslatePipe,
+    LanguageSwitcherComponent,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
@@ -62,9 +66,7 @@ export class RegisterComponent {
       error: (err) => {
         this.isSubmitting.set(false);
         this.errorMessage.set(
-          err?.status === 409
-            ? 'Пользователь с таким email уже существует'
-            : 'Не удалось зарегистрировать магазин',
+          err?.status === 409 ? 'auth.register.errorConflict' : 'auth.register.errorGeneric',
         );
       },
     });

@@ -1,30 +1,31 @@
 <div class="admin-page">
   <mat-toolbar color="primary">
     <mat-icon>admin_panel_settings</mat-icon>
-    <span class="title">Админка</span>
+    <span class="title">{{ 'common.admin' | translate }}</span>
     <span class="spacer"></span>
+    <app-language-switcher />
     <a mat-button routerLink="/">
       <mat-icon>arrow_back</mat-icon>
-      На главную
+      {{ 'common.backToHome' | translate }}
     </a>
   </mat-toolbar>
 
   <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="admin-tabs">
     <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">
       <mat-icon>dashboard</mat-icon>
-      Дешборд
+      {{ 'admin.nav.dashboard' | translate }}
     </a>
     <a mat-tab-link routerLink="products" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">
       <mat-icon>inventory_2</mat-icon>
-      Товары
+      {{ 'admin.nav.products' | translate }}
     </a>
     <a mat-tab-link routerLink="categories" routerLinkActive #categoriesLink="routerLinkActive" [active]="categoriesLink.isActive">
       <mat-icon>category</mat-icon>
-      Категории
+      {{ 'admin.nav.categories' | translate }}
     </a>
     <a mat-tab-link routerLink="users" routerLinkActive #usersLink="routerLinkActive" [active]="usersLink.isActive">
       <mat-icon>groups</mat-icon>
-      Сотрудники
+      {{ 'admin.nav.users' | translate }}
     </a>
   </nav>
   <mat-tab-nav-panel #tabPanel>

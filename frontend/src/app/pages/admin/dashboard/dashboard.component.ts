@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import {
   DashboardSummary,
@@ -15,7 +16,14 @@ import {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [DecimalPipe, MatCardModule, MatTableModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [
+    DecimalPipe,
+    MatCardModule,
+    MatTableModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslatePipe,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -59,7 +67,7 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {
         this.isLoading.set(false);
-        this.errorMessage.set('Не удалось загрузить дешборд');
+        this.errorMessage.set('admin.dashboard.loadError');
       },
     });
   }

@@ -7,7 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +22,8 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    TranslatePipe,
+    LanguageSwitcherComponent,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -59,7 +63,7 @@ export class LoginComponent {
       },
       error: () => {
         this.isSubmitting.set(false);
-        this.errorMessage.set('Неверный email или пароль');
+        this.errorMessage.set('auth.login.error');
       },
     });
   }

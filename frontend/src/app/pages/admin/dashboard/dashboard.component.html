@@ -1,6 +1,6 @@
 <div class="dashboard-page">
   @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
+    <p class="error">{{ errorMessage() | translate }}</p>
   }
 
   @if (isLoading()) {
@@ -13,34 +13,34 @@
         <mat-card appearance="outlined" class="stat-card">
           <mat-icon class="stat-icon">today</mat-icon>
           <div class="stat-body">
-            <span class="label">Сегодня</span>
+            <span class="label">{{ 'admin.dashboard.today' | translate }}</span>
             <span class="value">{{ summary.todayTotal | number: '1.0-2' }}</span>
-            <span class="sub">{{ summary.todayCount }} продаж</span>
+            <span class="sub">{{ summary.todayCount }} {{ 'admin.dashboard.salesCount' | translate }}</span>
           </div>
         </mat-card>
         <mat-card appearance="outlined" class="stat-card">
           <mat-icon class="stat-icon">date_range</mat-icon>
           <div class="stat-body">
-            <span class="label">За 7 дней</span>
+            <span class="label">{{ 'admin.dashboard.last7Days' | translate }}</span>
             <span class="value">{{ summary.last7DaysTotal | number: '1.0-2' }}</span>
-            <span class="sub">{{ summary.last7DaysCount }} продаж</span>
+            <span class="sub">{{ summary.last7DaysCount }} {{ 'admin.dashboard.salesCount' | translate }}</span>
           </div>
         </mat-card>
         <mat-card appearance="outlined" class="stat-card" [class.warning]="summary.lowStockCount > 0">
           <mat-icon class="stat-icon">warning</mat-icon>
           <div class="stat-body">
-            <span class="label">Низкий остаток</span>
+            <span class="label">{{ 'admin.dashboard.lowStock' | translate }}</span>
             <span class="value">{{ summary.lowStockCount }}</span>
-            <span class="sub">товаров</span>
+            <span class="sub">{{ 'admin.dashboard.items' | translate }}</span>
           </div>
         </mat-card>
       </div>
     }
 
     <mat-card appearance="outlined" class="chart-section">
-      <h2>Продажи за 7 дней</h2>
+      <h2>{{ 'admin.dashboard.salesChartTitle' | translate }}</h2>
       @if (salesByDay().length === 0) {
-        <p class="empty">Нет данных за период.</p>
+        <p class="empty">{{ 'admin.dashboard.noChartData' | translate }}</p>
       } @else {
         <div class="bar-chart">
           @for (point of salesByDay(); track point.date) {
@@ -56,21 +56,21 @@
     </mat-card>
 
     <mat-card appearance="outlined" class="list-section">
-      <h2>Топ товаров (7 дней)</h2>
+      <h2>{{ 'admin.dashboard.topProductsTitle' | translate }}</h2>
       @if (topProducts().length === 0) {
-        <p class="empty">Пока нет продаж.</p>
+        <p class="empty">{{ 'admin.dashboard.noSales' | translate }}</p>
       } @else {
         <table mat-table [dataSource]="topProducts()">
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Товар</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colProduct' | translate }}</th>
             <td mat-cell *matCellDef="let product">{{ product.name }}</td>
           </ng-container>
           <ng-container matColumnDef="qty">
-            <th mat-header-cell *matHeaderCellDef>Кол-во</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colQty' | translate }}</th>
             <td mat-cell *matCellDef="let product">{{ product.qty }}</td>
           </ng-container>
           <ng-container matColumnDef="revenue">
-            <th mat-header-cell *matHeaderCellDef>Выручка</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colRevenue' | translate }}</th>
             <td mat-cell *matCellDef="let product">{{ product.revenue | number: '1.0-2' }}</td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="topProductColumns"></tr>
@@ -80,21 +80,21 @@
     </mat-card>
 
     <mat-card appearance="outlined" class="list-section">
-      <h2>Требуют пополнения</h2>
+      <h2>{{ 'admin.dashboard.restockTitle' | translate }}</h2>
       @if (lowStock().length === 0) {
-        <p class="empty">Остатки в норме.</p>
+        <p class="empty">{{ 'admin.dashboard.stockOk' | translate }}</p>
       } @else {
         <table mat-table [dataSource]="lowStock()">
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Товар</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colProduct' | translate }}</th>
             <td mat-cell *matCellDef="let product">{{ product.name }}</td>
           </ng-container>
           <ng-container matColumnDef="category">
-            <th mat-header-cell *matHeaderCellDef>Категория</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colCategory' | translate }}</th>
             <td mat-cell *matCellDef="let product">{{ categoryName(product) }}</td>
           </ng-container>
           <ng-container matColumnDef="stockQty">
-            <th mat-header-cell *matHeaderCellDef>Остаток</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colStock' | translate }}</th>
             <td mat-cell *matCellDef="let product" class="low">{{ product.stockQty }} {{ product.unit }}</td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>

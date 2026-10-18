@@ -4,14 +4,17 @@
     <span class="brand">CasierAI</span>
     <span class="spacer"></span>
     @if (authService.currentUser(); as user) {
-      <span class="user-chip">{{ user.name }} · {{ user.role === 'owner' ? 'Владелец' : 'Кассир' }}</span>
+      <span class="user-chip">
+        {{ user.name }} · {{ (user.role === 'owner' ? 'common.roleOwner' : 'common.roleCashier') | translate }}
+      </span>
     }
+    <app-language-switcher />
     @if (authService.currentUser()?.role === 'owner') {
-      <a mat-icon-button routerLink="/admin" matTooltip="Админка">
+      <a mat-icon-button routerLink="/admin" [matTooltip]="'common.admin' | translate">
         <mat-icon>admin_panel_settings</mat-icon>
       </a>
     }
-    <button mat-icon-button (click)="authService.logout()" matTooltip="Выйти">
+    <button mat-icon-button (click)="authService.logout()" [matTooltip]="'common.logout' | translate">
       <mat-icon>logout</mat-icon>
     </button>
   </mat-toolbar>
@@ -26,7 +29,7 @@
       @if (cameraError()) {
         <p class="hint error">
           <mat-icon inline>warning</mat-icon>
-          {{ cameraError() }}
+          {{ cameraError() | translate }}
         </p>
       }
 
@@ -43,17 +46,17 @@
           } @else {
             <mat-icon>photo_camera</mat-icon>
           }
-          {{ isCapturing() ? 'Распознаём…' : 'Снять товар' }}
+          {{ (isCapturing() ? 'pos.capturing' : 'pos.captureButton') | translate }}
         </button>
         <label class="file-fallback">
           <mat-icon>upload</mat-icon>
-          Загрузить фото
+          {{ 'pos.uploadPhoto' | translate }}
           <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
         </label>
       </div>
 
       @if (recognizeMessage()) {
-        <p class="hint">{{ recognizeMessage() }}</p>
+        <p class="hint">{{ recognizeMessage() | translate }}</p>
       }
 
       @if (candidates().length > 0) {
@@ -64,7 +67,7 @@
               <span matListItemTitle>{{ candidate.name }}</span>
               <span matListItemLine>
                 {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
-                · {{ (candidate.confidence * 100) | number: '1.0-0' }}% совпадение
+                · {{ (candidate.confidence * 100) | number: '1.0-0' }}% {{ 'pos.confidenceSuffix' | translate }}
               </span>
             </a>
           }
@@ -74,16 +77,16 @@
 
     @if (pendingWeightItem(); as item) {
       <mat-card class="floating-card weight-dialog" appearance="outlined">
-        <p>{{ item.name }} — укажите вес, кг</p>
+        <p>{{ 'pos.weightPrompt' | translate: { name: item.name } }}</p>
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Вес, кг</mat-label>
+          <mat-label>{{ 'pos.weightLabel' | translate }}</mat-label>
           <input matInput type="number" min="0.001" step="0.001" [(ngModel)]="weightInputKg" />
         </mat-form-field>
         <div class="actions">
           <button mat-flat-button color="primary" [disabled]="weightInputKg <= 0" (click)="confirmWeight()">
-            Добавить
+            {{ 'common.add' | translate }}
           </button>
-          <button mat-stroked-button (click)="cancelWeight()">Отмена</button>
+          <button mat-stroked-button (click)="cancelWeight()">{{ 'common.cancel' | translate }}</button>
         </div>
       </mat-card>
     }
@@ -91,13 +94,13 @@
     <mat-card class="manual-card" appearance="outlined">
       <button mat-button class="link-button" (click)="toggleManualSearch()">
         <mat-icon>{{ manualSearchOpen() ? 'expand_less' : 'search' }}</mat-icon>
-        {{ manualSearchOpen() ? 'Скрыть ручной поиск' : 'Добавить товар вручную' }}
+        {{ (manualSearchOpen() ? 'pos.hideManualSearch' : 'pos.showManualSearch') | translate }}
       </button>
 
       @if (manualSearchOpen()) {
         <div class="manual-search">
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Поиск по названию</mat-label>
+            <mat-label>{{ 'pos.searchPlaceholder' | translate }}</mat-label>
             <input matInput type="text" [(ngModel)]="manualSearchTerm" />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
@@ -117,9 +120,9 @@
     </mat-card>
 
     <mat-card class="cart-card" appearance="outlined">
-      <h2>Чек</h2>
+      <h2>{{ 'pos.cartTitle' | translate }}</h2>
       @if (cart().length === 0) {
-        <p class="hint">Отсканируйте товар, чтобы добавить его в чек.</p>
+        <p class="hint">{{ 'pos.cartEmpty' | translate }}</p>
       } @else {
         <mat-list class="cart">
           @for (item of cart(); track item.productId + '-' + $index; let i = $index) {
@@ -142,11 +145,11 @@
       }
 
       @if (checkoutError()) {
-        <p class="hint error">{{ checkoutError() }}</p>
+        <p class="hint error">{{ checkoutError() | translate }}</p>
       }
 
       <div class="total-bar">
-        <span>Итого</span>
+        <span>{{ 'pos.total' | translate }}</span>
         <span class="total-amount">{{ total() }}</span>
       </div>
 
@@ -161,7 +164,7 @@
         } @else {
           <mat-icon>point_of_sale</mat-icon>
         }
-        {{ isCheckingOut() ? 'Оформляем…' : 'Оформить продажу' }}
+        {{ (isCheckingOut() ? 'pos.checkingOut' : 'pos.checkoutButton') | translate }}
       </button>
     </mat-card>
   </div>
@@ -169,9 +172,11 @@
   @if (lastReceiptTotal(); as receiptTotal) {
     <mat-card class="floating-card receipt-dialog" appearance="outlined">
       <mat-icon class="success-icon">check_circle</mat-icon>
-      <p>Продажа оформлена. Итого: <strong>{{ receiptTotal }}</strong></p>
-      <p class="hint">Введите эту сумму в терминал оплаты.</p>
-      <button mat-flat-button color="primary" (click)="dismissReceipt()">Следующий покупатель</button>
+      <p>{{ 'pos.receiptDone' | translate }} <strong>{{ receiptTotal }}</strong></p>
+      <p class="hint">{{ 'pos.receiptHint' | translate }}</p>
+      <button mat-flat-button color="primary" (click)="dismissReceipt()">
+        {{ 'pos.nextCustomer' | translate }}
+      </button>
     </mat-card>
   }
 </div>

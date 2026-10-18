@@ -21,12 +21,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { RecognitionService } from '../../core/services/recognition.service';
 import { TransactionsService } from '../../core/services/transactions.service';
 import { ProductsService } from '../../core/services/products.service';
 import { CartItem, RecognitionCandidate } from '../../core/models/pos.models';
 import { Product } from '../../core/models/catalog.models';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-pos',
@@ -43,6 +45,8 @@ import { Product } from '../../core/models/catalog.models';
     MatListModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    TranslatePipe,
+    LanguageSwitcherComponent,
   ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss',
@@ -106,7 +110,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private async startCamera(): Promise<void> {
     if (!navigator.mediaDevices?.getUserMedia) {
-      this.cameraError.set('Камера не поддерживается этим браузером');
+      this.cameraError.set('pos.cameraUnsupported');
       return;
     }
     try {
@@ -122,7 +126,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
         await video.play().catch(() => undefined);
       }
     } catch {
-      this.cameraError.set('Нет доступа к камере — используйте загрузку фото ниже');
+      this.cameraError.set('pos.cameraError');
     }
   }
 
@@ -174,12 +178,12 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isCapturing.set(false);
         this.candidates.set(candidates);
         if (candidates.length === 0) {
-          this.recognizeMessage.set('Товар не распознан — выберите вручную ниже');
+          this.recognizeMessage.set('pos.recognizeNoMatch');
         }
       },
       error: () => {
         this.isCapturing.set(false);
-        this.recognizeMessage.set('Ошибка распознавания — выберите товар вручную');
+        this.recognizeMessage.set('pos.recognizeError');
       },
     });
   }
@@ -312,7 +316,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: () => {
         this.isCheckingOut.set(false);
-        this.checkoutError.set('Не удалось провести продажу. Попробуйте снова.');
+        this.checkoutError.set('pos.checkoutError');
       },
     });
   }

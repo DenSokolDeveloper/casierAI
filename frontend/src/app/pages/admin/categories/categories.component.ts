@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/catalog.models';
 
@@ -23,6 +24,7 @@ import { Category } from '../../../core/models/catalog.models';
     MatTableModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    TranslatePipe,
   ],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
@@ -30,6 +32,7 @@ import { Category } from '../../../core/models/catalog.models';
 export class CategoriesComponent implements OnInit {
   private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly isLoading = signal(false);
@@ -56,7 +59,7 @@ export class CategoriesComponent implements OnInit {
         this.isLoading.set(false);
       },
       error: () => {
-        this.errorMessage.set('Не удалось загрузить категории');
+        this.errorMessage.set('admin.categories.loadError');
         this.isLoading.set(false);
       },
     });
@@ -110,7 +113,7 @@ export class CategoriesComponent implements OnInit {
 
     request.subscribe({
       next: (category) => this.afterSave(category._id),
-      error: () => this.errorMessage.set('Не удалось сохранить категорию'),
+      error: () => this.errorMessage.set('admin.categories.saveError'),
     });
   }
 
@@ -127,7 +130,7 @@ export class CategoriesComponent implements OnInit {
         this.load();
       },
       error: () => {
-        this.errorMessage.set('Категория сохранена, но не удалось загрузить фото');
+        this.errorMessage.set('admin.categories.photoError');
         this.cancelEdit();
         this.load();
       },
@@ -135,15 +138,15 @@ export class CategoriesComponent implements OnInit {
   }
 
   remove(category: Category): void {
-    if (!confirm(`Удалить категорию "${category.name}"?`)) {
+    const confirmMessage = this.translate.instant('admin.categories.confirmDelete', {
+      name: category.name,
+    });
+    if (!confirm(confirmMessage)) {
       return;
     }
     this.categoriesService.remove(category._id).subscribe({
       next: () => this.load(),
-      error: () =>
-        this.errorMessage.set(
-          'Не удалось удалить категорию (возможно, есть товары в этой категории)',
-        ),
+      error: () => this.errorMessage.set('admin.categories.deleteError'),
     });
   }
 }

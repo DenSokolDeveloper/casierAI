@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { Product, ProductDocument } from '../products/product.schema';
 import { StockMovement, StockMovementDocument } from './stock-movement.schema';
 import {
@@ -24,7 +24,7 @@ export class TransactionsService {
     @InjectConnection() private readonly connection: Connection,
   ) {}
 
-  async create(dto: CreateTransactionDto, cashierId: string) {
+  async create(dto: CreateTransactionDto, cashierId: string, shopId: Types.ObjectId) {
     if (dto.items.length === 0) {
       throw new BadRequestException('Transaction must contain at least one item');
     }
@@ -39,7 +39,7 @@ export class TransactionsService {
 
         for (const item of dto.items) {
           const product = await this.productModel
-            .findById(item.productId)
+            .findOne({ _id: item.productId, shopId })
             .session(session)
             .exec();
           if (!product || !product.active) {
@@ -59,14 +59,14 @@ export class TransactionsService {
         }
 
         const [transaction] = await this.transactionModel.create(
-          [{ items: lineItems, total: round2(total), cashierId }],
+          [{ items: lineItems, total: round2(total), cashierId, shopId }],
           { session },
         );
 
         for (const item of lineItems) {
           await this.productModel
             .updateOne(
-              { _id: item.productId },
+              { _id: item.productId, shopId },
               { $inc: { stockQty: -item.qty } },
               { session },
             )
@@ -75,6 +75,7 @@ export class TransactionsService {
           await this.stockMovementModel.create(
             [
               {
+                shopId,
                 productId: item.productId,
                 delta: -item.qty,
                 transactionId: transaction._id,
@@ -93,17 +94,17 @@ export class TransactionsService {
     }
   }
 
-  findAll() {
+  findAll(shopId: Types.ObjectId) {
     return this.transactionModel
-      .find()
+      .find({ shopId })
       .populate('cashierId', 'name email')
       .sort({ createdAt: -1 })
       .exec();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, shopId: Types.ObjectId) {
     const transaction = await this.transactionModel
-      .findById(id)
+      .findOne({ _id: id, shopId })
       .populate('cashierId', 'name email')
       .exec();
     if (!transaction) {

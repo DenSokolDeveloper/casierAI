@@ -30,6 +30,9 @@ export const TransactionItemSchema = SchemaFactory.createForClass(TransactionIte
 
 @Schema({ timestamps: true })
 export class Transaction {
+  @Prop({ type: Types.ObjectId, required: true })
+  shopId: Types.ObjectId;
+
   @Prop({ type: [TransactionItemSchema], required: true })
   items: TransactionItem[];
 

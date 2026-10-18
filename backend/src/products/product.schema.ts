@@ -8,6 +8,9 @@ export type ProductDocument = HydratedDocument<Product>;
 
 @Schema({ timestamps: true })
 export class Product {
+  @Prop({ type: Types.ObjectId, required: true })
+  shopId: Types.ObjectId;
+
   @Prop({ required: true })
   name: string;
 
@@ -28,6 +31,10 @@ export class Product {
 
   @Prop()
   visualDescription?: string;
+
+  // Reference photo as a JPEG data URI, for the admin UI only (not sent to the AI).
+  @Prop()
+  photoUrl?: string;
 
   @Prop({ default: true })
   active: boolean;

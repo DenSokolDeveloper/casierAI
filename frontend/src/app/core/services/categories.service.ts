@@ -24,4 +24,14 @@ export class CategoriesService {
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  uploadPhoto(id: string, photo: File): Observable<Category> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return this.http.post<Category>(`${this.baseUrl}/${id}/photo`, formData);
+  }
+
+  removePhoto(id: string): Observable<Category> {
+    return this.http.delete<Category>(`${this.baseUrl}/${id}/photo`);
+  }
 }

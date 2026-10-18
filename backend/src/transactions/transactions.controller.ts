@@ -15,16 +15,16 @@ export class TransactionsController {
     @Body() dto: CreateTransactionDto,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.transactionsService.create(dto, user.userId);
+    return this.transactionsService.create(dto, user.userId, user.shopId);
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  findAll(@CurrentUser() user: AuthenticatedUser) {
+    return this.transactionsService.findAll(user.shopId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionsService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.transactionsService.findOne(id, user.shopId);
   }
 }

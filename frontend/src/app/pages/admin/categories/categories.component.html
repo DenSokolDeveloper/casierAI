@@ -11,6 +11,17 @@
   <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
     <input type="text" formControlName="name" placeholder="Название" />
     <input type="text" formControlName="description" placeholder="Описание (необязательно)" />
+
+    <div class="photo-field">
+      @if (photoPreview()) {
+        <img [src]="photoPreview()" class="photo-preview" alt="" />
+      }
+      <label class="photo-upload">
+        Фото
+        <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+      </label>
+    </div>
+
     <div class="actions">
       <button type="submit" [disabled]="form.invalid">
         {{ editingId() ? 'Сохранить' : 'Добавить' }}
@@ -29,6 +40,7 @@
     <table>
       <thead>
         <tr>
+          <th></th>
           <th>Название</th>
           <th>Описание</th>
           <th></th>
@@ -37,6 +49,13 @@
       <tbody>
         @for (category of categories(); track category._id) {
           <tr>
+            <td>
+              @if (category.photoUrl) {
+                <img [src]="category.photoUrl" class="thumb" alt="" />
+              } @else {
+                <span class="no-photo">—</span>
+              }
+            </td>
             <td>{{ category.name }}</td>
             <td>{{ category.description || '—' }}</td>
             <td class="row-actions">

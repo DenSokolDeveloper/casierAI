@@ -20,6 +20,8 @@ export class ProductsComponent implements OnInit {
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly editingId = signal<string | null>(null);
+  protected readonly selectedPhoto = signal<File | null>(null);
+  protected readonly photoPreview = signal<string | null>(null);
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -71,6 +73,8 @@ export class ProductsComponent implements OnInit {
       visualDescription: '',
       active: true,
     });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
   }
 
   startEdit(product: Product): void {
@@ -87,11 +91,25 @@ export class ProductsComponent implements OnInit {
       visualDescription: product.visualDescription ?? '',
       active: product.active,
     });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(product.photoUrl ?? null);
   }
 
   cancelEdit(): void {
     this.editingId.set(null);
     this.startCreate();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.selectedPhoto.set(file);
+    const reader = new FileReader();
+    reader.onload = () => this.photoPreview.set(reader.result as string);
+    reader.readAsDataURL(file);
   }
 
   submit(): void {
@@ -117,11 +135,28 @@ export class ProductsComponent implements OnInit {
       : this.productsService.create(payload);
 
     request.subscribe({
+      next: (product) => this.afterSave(product._id),
+      error: () => this.errorMessage.set('Не удалось сохранить товар'),
+    });
+  }
+
+  private afterSave(productId: string): void {
+    const photo = this.selectedPhoto();
+    if (!photo) {
+      this.cancelEdit();
+      this.load();
+      return;
+    }
+    this.productsService.uploadPhoto(productId, photo).subscribe({
       next: () => {
         this.cancelEdit();
         this.load();
       },
-      error: () => this.errorMessage.set('Не удалось сохранить товар'),
+      error: () => {
+        this.errorMessage.set('Товар сохранён, но не удалось загрузить фото');
+        this.cancelEdit();
+        this.load();
+      },
     });
   }
 

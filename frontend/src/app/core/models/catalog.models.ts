@@ -2,6 +2,7 @@ export interface Category {
   _id: string;
   name: string;
   description?: string;
+  photoUrl?: string;
   active: boolean;
 }
 
@@ -23,6 +24,7 @@ export interface Product {
   unit: string;
   stockQty: number;
   visualDescription?: string;
+  photoUrl?: string;
   active: boolean;
 }
 

@@ -7,11 +7,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { User, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
+import { RegisterDto } from '../auth/dto/register.dto';
 
 const SALT_ROUNDS = 10;
 
@@ -38,11 +39,11 @@ export class UsersService implements OnModuleInit {
     const configuredPassword = this.config.get<string>('OWNER_PASSWORD');
     const password = configuredPassword ? configuredPassword : randomBytes(9).toString('base64url');
 
-    await this.create({
+    await this.createShopOwner({
+      shopName: 'CasierAI',
       email,
       password,
       name: 'Owner',
-      role: 'owner',
     });
 
     if (!configuredPassword) {
@@ -54,7 +55,28 @@ export class UsersService implements OnModuleInit {
     }
   }
 
-  async create(dto: CreateUserDto) {
+  // Self-registration: creates a brand-new, independent shop with this
+  // person as its owner. shopId is the new user's own _id.
+  async createShopOwner(dto: RegisterDto) {
+    const existing = await this.userModel.findOne({ email: dto.email }).exec();
+    if (existing) {
+      throw new ConflictException(`User with email ${dto.email} already exists`);
+    }
+    const passwordHash = await bcrypt.hash(dto.password, SALT_ROUNDS);
+    const _id = new Types.ObjectId();
+    return this.userModel.create({
+      _id,
+      email: dto.email,
+      passwordHash,
+      name: dto.name,
+      role: 'owner',
+      shopId: _id,
+      shopName: dto.shopName,
+    });
+  }
+
+  // Adds a teammate (cashier or co-owner) to the caller's existing shop.
+  async create(dto: CreateUserDto, shopId: Types.ObjectId) {
     const existing = await this.userModel.findOne({ email: dto.email }).exec();
     if (existing) {
       throw new ConflictException(`User with email ${dto.email} already exists`);
@@ -65,27 +87,28 @@ export class UsersService implements OnModuleInit {
       passwordHash,
       name: dto.name,
       role: dto.role,
+      shopId,
     });
   }
 
-  findAll() {
-    return this.userModel.find().select('-passwordHash').exec();
+  findAll(shopId: Types.ObjectId) {
+    return this.userModel.find({ shopId }).select('-passwordHash').exec();
   }
 
   findByEmail(email: string) {
     return this.userModel.findOne({ email: email.toLowerCase().trim() }).exec();
   }
 
-  async findOne(id: string) {
-    const user = await this.userModel.findById(id).select('-passwordHash').exec();
+  async findOne(id: string, shopId: Types.ObjectId) {
+    const user = await this.userModel.findOne({ _id: id, shopId }).select('-passwordHash').exec();
     if (!user) {
       throw new NotFoundException(`User ${id} not found`);
     }
     return user;
   }
 
-  async remove(id: string) {
-    const user = await this.userModel.findByIdAndDelete(id).exec();
+  async remove(id: string, shopId: Types.ObjectId) {
+    const user = await this.userModel.findOneAndDelete({ _id: id, shopId }).exec();
     if (!user) {
       throw new NotFoundException(`User ${id} not found`);
     }

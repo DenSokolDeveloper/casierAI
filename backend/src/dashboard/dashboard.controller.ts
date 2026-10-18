@@ -4,6 +4,8 @@ import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/jwt.strategy';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('owner')
@@ -12,25 +14,29 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('summary')
-  summary() {
-    return this.dashboardService.getSummary();
+  summary(@CurrentUser() user: AuthenticatedUser) {
+    return this.dashboardService.getSummary(user.shopId);
   }
 
   @Get('sales-by-day')
-  salesByDay(@Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number) {
-    return this.dashboardService.getSalesByDay(days);
+  salesByDay(
+    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.dashboardService.getSalesByDay(days, user.shopId);
   }
 
   @Get('top-products')
   topProducts(
     @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
     @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
+    @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.dashboardService.getTopProducts(days, limit);
+    return this.dashboardService.getTopProducts(days, limit, user.shopId);
   }
 
   @Get('low-stock')
-  lowStock() {
-    return this.dashboardService.getLowStock();
+  lowStock(@CurrentUser() user: AuthenticatedUser) {
+    return this.dashboardService.getLowStock(user.shopId);
   }
 }

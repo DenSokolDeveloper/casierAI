@@ -24,4 +24,14 @@ export class ProductsService {
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  uploadPhoto(id: string, photo: File): Observable<Product> {
+    const formData = new FormData();
+    formData.append('photo', photo);
+    return this.http.post<Product>(`${this.baseUrl}/${id}/photo`, formData);
+  }
+
+  removePhoto(id: string): Observable<Product> {
+    return this.http.delete<Product>(`${this.baseUrl}/${id}/photo`);
+  }
 }

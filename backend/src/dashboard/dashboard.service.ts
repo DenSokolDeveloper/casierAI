@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Transaction, TransactionDocument } from '../transactions/transaction.schema';
 import { Product, ProductDocument } from '../products/product.schema';
 
@@ -31,20 +31,21 @@ export class DashboardService {
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
   ) {}
 
-  async getSummary() {
+  async getSummary(shopId: Types.ObjectId) {
     const todayStart = daysAgo(0);
     const last7Start = daysAgo(6);
 
     const [todayAgg, last7Agg, lowStockCount] = await Promise.all([
       this.transactionModel.aggregate([
-        { $match: { createdAt: { $gte: todayStart } } },
+        { $match: { shopId, createdAt: { $gte: todayStart } } },
         { $group: { _id: null, total: { $sum: '$total' }, count: { $sum: 1 } } },
       ]),
       this.transactionModel.aggregate([
-        { $match: { createdAt: { $gte: last7Start } } },
+        { $match: { shopId, createdAt: { $gte: last7Start } } },
         { $group: { _id: null, total: { $sum: '$total' }, count: { $sum: 1 } } },
       ]),
       this.productModel.countDocuments({
+        shopId,
         active: true,
         stockQty: { $lt: LOW_STOCK_THRESHOLD },
       }),
@@ -59,11 +60,11 @@ export class DashboardService {
     };
   }
 
-  async getSalesByDay(days: number) {
+  async getSalesByDay(days: number, shopId: Types.ObjectId) {
     const start = daysAgo(days - 1);
 
     const rows = await this.transactionModel.aggregate([
-      { $match: { createdAt: { $gte: start } } },
+      { $match: { shopId, createdAt: { $gte: start } } },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' } },
@@ -84,11 +85,11 @@ export class DashboardService {
     return series;
   }
 
-  async getTopProducts(days: number, limit: number) {
+  async getTopProducts(days: number, limit: number, shopId: Types.ObjectId) {
     const start = daysAgo(days - 1);
 
     return this.transactionModel.aggregate([
-      { $match: { createdAt: { $gte: start } } },
+      { $match: { shopId, createdAt: { $gte: start } } },
       { $unwind: '$items' },
       {
         $group: {
@@ -112,9 +113,9 @@ export class DashboardService {
     ]);
   }
 
-  getLowStock() {
+  getLowStock(shopId: Types.ObjectId) {
     return this.productModel
-      .find({ active: true, stockQty: { $lt: LOW_STOCK_THRESHOLD } })
+      .find({ shopId, active: true, stockQty: { $lt: LOW_STOCK_THRESHOLD } })
       .populate('categoryId')
       .sort({ stockQty: 1 })
       .exec();

@@ -20,5 +20,7 @@
     <button type="submit" [disabled]="form.invalid || isSubmitting()">
       {{ isSubmitting() ? 'Входим…' : 'Войти' }}
     </button>
+
+    <a class="switch-link" routerLink="/register">Новый магазин? Зарегистрироваться</a>
   </form>
 </div>

@@ -52,6 +52,19 @@
       <textarea formControlName="visualDescription" rows="2"></textarea>
     </div>
 
+    <div class="field photo-field">
+      <label>Фото (эталон)</label>
+      <div class="photo-row">
+        @if (photoPreview()) {
+          <img [src]="photoPreview()" class="photo-preview" alt="" />
+        }
+        <label class="photo-upload">
+          Выбрать фото
+          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+        </label>
+      </div>
+    </div>
+
     <label class="checkbox">
       <input type="checkbox" formControlName="active" />
       Активен
@@ -75,6 +88,7 @@
     <table>
       <thead>
         <tr>
+          <th></th>
           <th>Название</th>
           <th>Категория</th>
           <th>Цена</th>
@@ -86,6 +100,13 @@
       <tbody>
         @for (product of products(); track product._id) {
           <tr>
+            <td>
+              @if (product.photoUrl) {
+                <img [src]="product.photoUrl" class="thumb" alt="" />
+              } @else {
+                <span class="no-photo">—</span>
+              }
+            </td>
             <td>{{ product.name }}</td>
             <td>{{ categoryName(product) }}</td>
             <td>{{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}</td>

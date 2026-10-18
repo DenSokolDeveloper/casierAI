@@ -7,6 +7,9 @@ export type StockMovementDocument = HydratedDocument<StockMovement>;
 
 @Schema({ timestamps: true })
 export class StockMovement {
+  @Prop({ type: Types.ObjectId, required: true })
+  shopId: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, ref: Product.name, required: true })
   productId: Types.ObjectId;
 

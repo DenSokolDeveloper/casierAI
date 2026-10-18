@@ -9,6 +9,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/jwt.strategy';
 import { RecognitionService, SupportedImageMimeType } from './recognition.service';
 
 const ALLOWED_MIME_TYPES: SupportedImageMimeType[] = [
@@ -30,7 +32,10 @@ export class RecognitionController {
       limits: { fileSize: MAX_FILE_SIZE_BYTES },
     }),
   )
-  async recognize(@UploadedFile() file?: Express.Multer.File) {
+  async recognize(
+    @CurrentUser() user: AuthenticatedUser,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('Missing "photo" file field');
     }
@@ -43,6 +48,7 @@ export class RecognitionController {
     return this.recognitionService.recognize(
       file.buffer,
       file.mimetype as SupportedImageMimeType,
+      user.shopId,
     );
   }
 }

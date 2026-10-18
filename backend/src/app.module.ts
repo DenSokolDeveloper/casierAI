@@ -10,6 +10,11 @@ import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { RecognitionModule } from './recognition/recognition.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { User, UserSchema } from './users/user.schema';
+import { Product, ProductSchema } from './products/product.schema';
+import { Category, CategorySchema } from './categories/category.schema';
+import { Transaction, TransactionSchema } from './transactions/transaction.schema';
+import { DataMigrationService } from './common/data-migration.service';
 
 @Module({
   imports: [
@@ -20,6 +25,12 @@ import { DashboardModule } from './dashboard/dashboard.module';
         uri: config.get<string>('MONGO_URI', 'mongodb://localhost:27017/casierai'),
       }),
     }),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Product.name, schema: ProductSchema },
+      { name: Category.name, schema: CategorySchema },
+      { name: Transaction.name, schema: TransactionSchema },
+    ]),
     ProductsModule,
     UsersModule,
     AuthModule,
@@ -29,6 +40,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     DashboardModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DataMigrationService],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthUser, LoginResponse } from '../models/auth.models';
+import { AuthUser, LoginResponse, RegisterPayload } from '../models/auth.models';
 
 const TOKEN_KEY = 'casierai_token';
 const USER_KEY = 'casierai_user';
@@ -25,14 +25,20 @@ export class AuthService {
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${environment.apiBaseUrl}/auth/login`, { email, password })
-      .pipe(
-        tap((response) => {
-          this.tokenSignal.set(response.accessToken);
-          this.userSignal.set(response.user);
-          this.writeStorage(TOKEN_KEY, response.accessToken);
-          this.writeStorage(USER_KEY, JSON.stringify(response.user));
-        }),
-      );
+      .pipe(tap((response) => this.storeSession(response)));
+  }
+
+  register(payload: RegisterPayload): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${environment.apiBaseUrl}/auth/register`, payload)
+      .pipe(tap((response) => this.storeSession(response)));
+  }
+
+  private storeSession(response: LoginResponse): void {
+    this.tokenSignal.set(response.accessToken);
+    this.userSignal.set(response.user);
+    this.writeStorage(TOKEN_KEY, response.accessToken);
+    this.writeStorage(USER_KEY, JSON.stringify(response.user));
   }
 
   logout(): void {

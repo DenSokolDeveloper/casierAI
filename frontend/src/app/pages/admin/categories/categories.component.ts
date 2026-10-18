@@ -17,6 +17,8 @@ export class CategoriesComponent implements OnInit {
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly editingId = signal<string | null>(null);
+  protected readonly selectedPhoto = signal<File | null>(null);
+  protected readonly photoPreview = signal<string | null>(null);
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -44,16 +46,34 @@ export class CategoriesComponent implements OnInit {
   startCreate(): void {
     this.editingId.set(null);
     this.form.reset({ name: '', description: '' });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
   }
 
   startEdit(category: Category): void {
     this.editingId.set(category._id);
     this.form.setValue({ name: category.name, description: category.description ?? '' });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(category.photoUrl ?? null);
   }
 
   cancelEdit(): void {
     this.editingId.set(null);
     this.form.reset({ name: '', description: '' });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.selectedPhoto.set(file);
+    const reader = new FileReader();
+    reader.onload = () => this.photoPreview.set(reader.result as string);
+    reader.readAsDataURL(file);
   }
 
   submit(): void {
@@ -70,11 +90,28 @@ export class CategoriesComponent implements OnInit {
       : this.categoriesService.create(payload);
 
     request.subscribe({
+      next: (category) => this.afterSave(category._id),
+      error: () => this.errorMessage.set('Не удалось сохранить категорию'),
+    });
+  }
+
+  private afterSave(categoryId: string): void {
+    const photo = this.selectedPhoto();
+    if (!photo) {
+      this.cancelEdit();
+      this.load();
+      return;
+    }
+    this.categoriesService.uploadPhoto(categoryId, photo).subscribe({
       next: () => {
         this.cancelEdit();
         this.load();
       },
-      error: () => this.errorMessage.set('Не удалось сохранить категорию'),
+      error: () => {
+        this.errorMessage.set('Категория сохранена, но не удалось загрузить фото');
+        this.cancelEdit();
+        this.load();
+      },
     });
   }
 

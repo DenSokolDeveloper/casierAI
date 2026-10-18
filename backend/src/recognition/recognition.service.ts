@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
+import { Types } from 'mongoose';
 import { ProductsService } from '../products/products.service';
 
 const RECOGNITION_MODEL = 'claude-haiku-5-5';
@@ -31,8 +32,9 @@ export class RecognitionService {
   async recognize(
     imageBuffer: Buffer,
     mimeType: SupportedImageMimeType,
+    shopId: Types.ObjectId,
   ): Promise<{ candidates: RecognitionCandidate[] }> {
-    const products = await this.productsService.findAll();
+    const products = await this.productsService.findAll(shopId);
     const activeProducts = products.filter((product) => product.active);
 
     if (activeProducts.length === 0) {

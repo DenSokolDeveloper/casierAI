@@ -11,3 +11,10 @@ export interface LoginResponse {
   accessToken: string;
   user: AuthUser;
 }
+
+export interface RegisterPayload {
+  shopName: string;
+  name: string;
+  email: string;
+  password: string;
+}

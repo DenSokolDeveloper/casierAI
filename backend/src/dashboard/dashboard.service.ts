@@ -6,15 +6,16 @@ import { Product, ProductDocument } from '../products/product.schema';
 
 const LOW_STOCK_THRESHOLD = 5;
 
-function startOfDay(date: Date): Date {
-  const result = new Date(date);
-  result.setHours(0, 0, 0, 0);
-  return result;
+// All day boundaries are computed in UTC so they line up with Mongo's
+// $dateToString (which groups in UTC by default) regardless of the
+// server's local timezone.
+function startOfUTCDay(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
 function daysAgo(days: number): Date {
-  const result = startOfDay(new Date());
-  result.setDate(result.getDate() - days);
+  const result = startOfUTCDay(new Date());
+  result.setUTCDate(result.getUTCDate() - days);
   return result;
 }
 
@@ -31,7 +32,7 @@ export class DashboardService {
   ) {}
 
   async getSummary() {
-    const todayStart = startOfDay(new Date());
+    const todayStart = daysAgo(0);
     const last7Start = daysAgo(6);
 
     const [todayAgg, last7Agg, lowStockCount] = await Promise.all([
@@ -65,7 +66,7 @@ export class DashboardService {
       { $match: { createdAt: { $gte: start } } },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' } },
           total: { $sum: '$total' },
           count: { $sum: 1 },
         },

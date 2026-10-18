@@ -1,0 +1,80 @@
+.users-page {
+  h2 {
+    margin: 0 0 12px;
+    font-size: 1.1rem;
+  }
+
+  .error {
+    color: #c0392b;
+  }
+
+  .entity-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #f8f9fb;
+    border-radius: 8px;
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.85rem;
+      color: #333;
+    }
+
+    input,
+    select {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    .actions {
+      grid-column: 1 / -1;
+
+      button {
+        padding: 8px 14px;
+        border-radius: 6px;
+        border: 1px solid #2563eb;
+        background: #2563eb;
+        color: #fff;
+        cursor: pointer;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+
+    .row-actions button {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+  }
+
+  .empty {
+    color: #777;
+  }
+}

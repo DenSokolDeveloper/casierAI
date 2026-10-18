@@ -1,0 +1,67 @@
+<div class="users-page">
+  <h2>Сотрудники</h2>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label>Имя</label>
+      <input type="text" formControlName="name" />
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="email" formControlName="email" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label>Пароль</label>
+      <input type="password" formControlName="password" autocomplete="new-password" />
+    </div>
+
+    <div class="field">
+      <label>Роль</label>
+      <select formControlName="role">
+        <option value="cashier">Кассир</option>
+        <option value="owner">Владелец</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || isCreating()">
+        {{ isCreating() ? 'Создаём…' : 'Добавить сотрудника' }}
+      </button>
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <p>Загрузка…</p>
+  } @else if (users().length === 0) {
+    <p class="empty">Пользователей пока нет.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Email</th>
+          <th>Роль</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user._id) {
+          <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role === 'owner' ? 'Владелец' : 'Кассир' }}</td>
+            <td class="row-actions">
+              <button type="button" (click)="remove(user)">Удалить</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

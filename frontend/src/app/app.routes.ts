@@ -36,6 +36,11 @@ export const routes: Routes = [
             (m) => m.CategoriesComponent,
           ),
       },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./pages/admin/users/users.component').then((m) => m.UsersComponent),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

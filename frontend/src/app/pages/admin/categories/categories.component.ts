@@ -1,11 +1,29 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/catalog.models';
 
 @Component({
   selector: 'app-admin-categories',
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+  ],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
@@ -19,6 +37,7 @@ export class CategoriesComponent implements OnInit {
   protected readonly editingId = signal<string | null>(null);
   protected readonly selectedPhoto = signal<File | null>(null);
   protected readonly photoPreview = signal<string | null>(null);
+  protected readonly displayedColumns = ['photo', 'name', 'description', 'actions'];
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],

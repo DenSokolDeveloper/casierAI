@@ -1,147 +1,177 @@
 <div class="pos-page">
-  <header>
-    <div>
-      <h1>CasierAI</h1>
-      @if (authService.currentUser(); as user) {
-        <p>{{ user.name }} · {{ user.role === 'owner' ? 'Владелец' : 'Кассир' }}</p>
-      }
-    </div>
-    <div class="header-actions">
-      @if (authService.currentUser()?.role === 'owner') {
-        <a routerLink="/admin">Админка</a>
-      }
-      <button type="button" (click)="authService.logout()">Выйти</button>
-    </div>
-  </header>
-
-  <section class="camera-section">
-    <div class="camera-frame">
-      <video #video playsinline muted></video>
-      <canvas #canvas hidden></canvas>
-    </div>
-
-    @if (cameraError()) {
-      <p class="error">{{ cameraError() }}</p>
+  <mat-toolbar color="primary" class="pos-toolbar">
+    <mat-icon>storefront</mat-icon>
+    <span class="brand">CasierAI</span>
+    <span class="spacer"></span>
+    @if (authService.currentUser(); as user) {
+      <span class="user-chip">{{ user.name }} · {{ user.role === 'owner' ? 'Владелец' : 'Кассир' }}</span>
     }
-
-    <div class="camera-actions">
-      <button type="button" class="primary" [disabled]="isCapturing()" (click)="capturePhoto()">
-        {{ isCapturing() ? 'Распознаём…' : '📷 Снять товар' }}
-      </button>
-      <label class="file-fallback">
-        Загрузить фото
-        <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
-      </label>
-    </div>
-
-    @if (recognizeMessage()) {
-      <p class="hint">{{ recognizeMessage() }}</p>
+    @if (authService.currentUser()?.role === 'owner') {
+      <a mat-icon-button routerLink="/admin" matTooltip="Админка">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </a>
     }
-
-    @if (candidates().length > 0) {
-      <ul class="candidates">
-        @for (candidate of candidates(); track candidate.productId) {
-          <li>
-            <button type="button" (click)="selectCandidate(candidate)">
-              <span class="name">{{ candidate.name }}</span>
-              <span class="price">
-                {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
-              </span>
-              <span class="confidence">{{ (candidate.confidence * 100) | number: '1.0-0' }}%</span>
-            </button>
-          </li>
-        }
-      </ul>
-    }
-  </section>
-
-  @if (pendingWeightItem(); as item) {
-    <div class="weight-dialog">
-      <p>{{ item.name }} — укажите вес, кг</p>
-      <input type="number" min="0.001" step="0.001" [(ngModel)]="weightInputKg" />
-      <div class="actions">
-        <button type="button" class="primary" [disabled]="weightInputKg <= 0" (click)="confirmWeight()">
-          Добавить
-        </button>
-        <button type="button" (click)="cancelWeight()">Отмена</button>
-      </div>
-    </div>
-  }
-
-  <section class="manual-section">
-    <button type="button" class="link" (click)="toggleManualSearch()">
-      {{ manualSearchOpen() ? 'Скрыть ручной поиск' : 'Добавить товар вручную' }}
+    <button mat-icon-button (click)="authService.logout()" matTooltip="Выйти">
+      <mat-icon>logout</mat-icon>
     </button>
+  </mat-toolbar>
 
-    @if (manualSearchOpen()) {
-      <div class="manual-search">
-        <input type="text" placeholder="Поиск по названию…" [(ngModel)]="manualSearchTerm" />
-        <ul>
-          @for (product of manualResults(); track product._id) {
-            <li>
-              <button type="button" (click)="selectManualProduct(product)">
-                <span class="name">{{ product.name }}</span>
-                <span class="price">
+  <div class="pos-content">
+    <mat-card class="camera-card" appearance="outlined">
+      <div class="camera-frame">
+        <video #video playsinline muted></video>
+        <canvas #canvas hidden></canvas>
+      </div>
+
+      @if (cameraError()) {
+        <p class="hint error">
+          <mat-icon inline>warning</mat-icon>
+          {{ cameraError() }}
+        </p>
+      }
+
+      <div class="camera-actions">
+        <button
+          mat-flat-button
+          color="primary"
+          class="capture-btn"
+          [disabled]="isCapturing()"
+          (click)="capturePhoto()"
+        >
+          @if (isCapturing()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            <mat-icon>photo_camera</mat-icon>
+          }
+          {{ isCapturing() ? 'Распознаём…' : 'Снять товар' }}
+        </button>
+        <label class="file-fallback">
+          <mat-icon>upload</mat-icon>
+          Загрузить фото
+          <input type="file" accept="image/*" capture="environment" (change)="onFileSelected($event)" />
+        </label>
+      </div>
+
+      @if (recognizeMessage()) {
+        <p class="hint">{{ recognizeMessage() }}</p>
+      }
+
+      @if (candidates().length > 0) {
+        <mat-nav-list class="candidates">
+          @for (candidate of candidates(); track candidate.productId) {
+            <a mat-list-item (click)="selectCandidate(candidate)">
+              <mat-icon matListItemIcon>inventory_2</mat-icon>
+              <span matListItemTitle>{{ candidate.name }}</span>
+              <span matListItemLine>
+                {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
+                · {{ (candidate.confidence * 100) | number: '1.0-0' }}% совпадение
+              </span>
+            </a>
+          }
+        </mat-nav-list>
+      }
+    </mat-card>
+
+    @if (pendingWeightItem(); as item) {
+      <mat-card class="floating-card weight-dialog" appearance="outlined">
+        <p>{{ item.name }} — укажите вес, кг</p>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Вес, кг</mat-label>
+          <input matInput type="number" min="0.001" step="0.001" [(ngModel)]="weightInputKg" />
+        </mat-form-field>
+        <div class="actions">
+          <button mat-flat-button color="primary" [disabled]="weightInputKg <= 0" (click)="confirmWeight()">
+            Добавить
+          </button>
+          <button mat-stroked-button (click)="cancelWeight()">Отмена</button>
+        </div>
+      </mat-card>
+    }
+
+    <mat-card class="manual-card" appearance="outlined">
+      <button mat-button class="link-button" (click)="toggleManualSearch()">
+        <mat-icon>{{ manualSearchOpen() ? 'expand_less' : 'search' }}</mat-icon>
+        {{ manualSearchOpen() ? 'Скрыть ручной поиск' : 'Добавить товар вручную' }}
+      </button>
+
+      @if (manualSearchOpen()) {
+        <div class="manual-search">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Поиск по названию</mat-label>
+            <input matInput type="text" [(ngModel)]="manualSearchTerm" />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          <mat-nav-list>
+            @for (product of manualResults(); track product._id) {
+              <a mat-list-item (click)="selectManualProduct(product)">
+                <mat-icon matListItemIcon>inventory_2</mat-icon>
+                <span matListItemTitle>{{ product.name }}</span>
+                <span matListItemLine>
                   {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
                 </span>
-              </button>
-            </li>
-          }
-        </ul>
-      </div>
-    }
-  </section>
-
-  <section class="cart-section">
-    <h2>Чек</h2>
-    @if (cart().length === 0) {
-      <p class="empty">Отсканируйте товар, чтобы добавить его в чек.</p>
-    } @else {
-      <ul class="cart">
-        @for (item of cart(); track item.productId + '-' + $index; let i = $index) {
-          <li>
-            <div class="info">
-              <span class="name">{{ item.name }}</span>
-              <span class="price">{{ item.unitPrice }} × {{ item.qty }} {{ item.unit }}</span>
-            </div>
-            @if (item.priceType === 'fixed') {
-              <div class="qty-controls">
-                <button type="button" (click)="changeQty(i, -1)">−</button>
-                <span>{{ item.qty }}</span>
-                <button type="button" (click)="changeQty(i, 1)">+</button>
-              </div>
+              </a>
             }
-            <span class="line-total">{{ item.lineTotal }}</span>
-            <button type="button" class="remove" (click)="removeItem(i)">✕</button>
-          </li>
+          </mat-nav-list>
+        </div>
+      }
+    </mat-card>
+
+    <mat-card class="cart-card" appearance="outlined">
+      <h2>Чек</h2>
+      @if (cart().length === 0) {
+        <p class="hint">Отсканируйте товар, чтобы добавить его в чек.</p>
+      } @else {
+        <mat-list class="cart">
+          @for (item of cart(); track item.productId + '-' + $index; let i = $index) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>shopping_basket</mat-icon>
+              <span matListItemTitle>{{ item.name }}</span>
+              <span matListItemLine>{{ item.unitPrice }} × {{ item.qty }} {{ item.unit }}</span>
+              <div matListItemMeta class="row-meta">
+                @if (item.priceType === 'fixed') {
+                  <button mat-icon-button (click)="changeQty(i, -1)"><mat-icon>remove</mat-icon></button>
+                  <span class="qty">{{ item.qty }}</span>
+                  <button mat-icon-button (click)="changeQty(i, 1)"><mat-icon>add</mat-icon></button>
+                }
+                <span class="line-total">{{ item.lineTotal }}</span>
+                <button mat-icon-button (click)="removeItem(i)"><mat-icon>close</mat-icon></button>
+              </div>
+            </mat-list-item>
+          }
+        </mat-list>
+      }
+
+      @if (checkoutError()) {
+        <p class="hint error">{{ checkoutError() }}</p>
+      }
+
+      <div class="total-bar">
+        <span>Итого</span>
+        <span class="total-amount">{{ total() }}</span>
+      </div>
+
+      <button
+        mat-flat-button
+        class="checkout-btn"
+        [disabled]="cart().length === 0 || isCheckingOut()"
+        (click)="checkout()"
+      >
+        @if (isCheckingOut()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <mat-icon>point_of_sale</mat-icon>
         }
-      </ul>
-    }
-
-    @if (checkoutError()) {
-      <p class="error">{{ checkoutError() }}</p>
-    }
-
-    <div class="total-bar">
-      <span>Итого</span>
-      <span class="total-amount">{{ total() }}</span>
-    </div>
-
-    <button
-      type="button"
-      class="checkout"
-      [disabled]="cart().length === 0 || isCheckingOut()"
-      (click)="checkout()"
-    >
-      {{ isCheckingOut() ? 'Оформляем…' : 'Оформить продажу' }}
-    </button>
-  </section>
+        {{ isCheckingOut() ? 'Оформляем…' : 'Оформить продажу' }}
+      </button>
+    </mat-card>
+  </div>
 
   @if (lastReceiptTotal(); as receiptTotal) {
-    <div class="receipt-dialog">
+    <mat-card class="floating-card receipt-dialog" appearance="outlined">
+      <mat-icon class="success-icon">check_circle</mat-icon>
       <p>Продажа оформлена. Итого: <strong>{{ receiptTotal }}</strong></p>
       <p class="hint">Введите эту сумму в терминал оплаты.</p>
-      <button type="button" (click)="dismissReceipt()">Следующий покупатель</button>
-    </div>
+      <button mat-flat-button color="primary" (click)="dismissReceipt()">Следующий покупатель</button>
+    </mat-card>
   }
 </div>

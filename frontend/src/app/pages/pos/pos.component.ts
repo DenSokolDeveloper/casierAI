@@ -12,6 +12,15 @@ import {
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { RecognitionService } from '../../core/services/recognition.service';
 import { TransactionsService } from '../../core/services/transactions.service';
@@ -21,7 +30,20 @@ import { Product } from '../../core/models/catalog.models';
 
 @Component({
   selector: 'app-pos',
-  imports: [FormsModule, RouterLink, DecimalPipe],
+  imports: [
+    FormsModule,
+    RouterLink,
+    DecimalPipe,
+    MatToolbarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+  ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss',
 })

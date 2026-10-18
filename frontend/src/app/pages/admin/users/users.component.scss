@@ -1,80 +1,60 @@
 .users-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
   h2 {
-    margin: 0 0 12px;
+    margin: 0;
     font-size: 1.1rem;
   }
 
   .error {
-    color: #c0392b;
+    color: var(--mat-sys-error);
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+
+  .empty {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .entity-form-card {
+    padding: 16px;
   }
 
   .entity-form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 12px;
-    background: #f8f9fb;
-    border-radius: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 4px 12px;
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.85rem;
-      color: #333;
-    }
-
-    input,
-    select {
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font: inherit;
+    mat-form-field {
+      width: 100%;
     }
 
     .actions {
       grid-column: 1 / -1;
-
-      button {
-        padding: 8px 14px;
-        border-radius: 6px;
-        border: 1px solid #2563eb;
-        background: #2563eb;
-        color: #fff;
-        cursor: pointer;
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
     }
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
+  .table-card {
+    padding: 0;
+    overflow-x: auto;
 
-    th,
-    td {
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
+    table {
+      width: 100%;
     }
 
-    .row-actions button {
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: #fff;
-      cursor: pointer;
-      font-size: 0.85rem;
+    mat-chip.owner-chip {
+      --mdc-chip-elevated-container-color: var(--mat-sys-tertiary-container);
+      --mdc-chip-label-text-color: var(--mat-sys-on-tertiary-container);
     }
-  }
 
-  .empty {
-    color: #777;
+    .row-actions {
+      white-space: nowrap;
+    }
   }
 }

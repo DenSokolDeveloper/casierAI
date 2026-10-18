@@ -1,89 +1,84 @@
 .products-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
   .toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
 
     h2 {
       margin: 0;
       font-size: 1.1rem;
     }
-
-    button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      background: #2563eb;
-      color: #fff;
-      cursor: pointer;
-    }
   }
 
   .error {
-    color: #c0392b;
+    color: var(--mat-sys-error);
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+
+  .empty {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .entity-form-card {
+    padding: 16px;
   }
 
   .entity-form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-    padding: 12px;
-    background: #f8f9fb;
-    border-radius: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 4px 12px;
+    align-items: start;
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.85rem;
-      color: #333;
-
-      &.full {
-        grid-column: 1 / -1;
-      }
+    mat-form-field {
+      width: 100%;
     }
 
-    input,
-    select,
-    textarea {
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font: inherit;
+    .field-full {
+      grid-column: 1 / -1;
     }
 
-    .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      align-self: end;
-    }
-
-    .photo-field .photo-row {
+    .photo-field {
       display: flex;
       align-items: center;
       gap: 10px;
+      padding-top: 6px;
 
       .photo-preview {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
         object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid #ddd;
+        border-radius: 8px;
+        border: 1px solid var(--mat-sys-outline-variant);
       }
 
       .photo-upload {
         position: relative;
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        background: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 14px;
+        height: 36px;
+        border: 1px solid var(--mat-sys-outline);
+        border-radius: 18px;
         font-size: 0.85rem;
         cursor: pointer;
         overflow: hidden;
+        white-space: nowrap;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
 
         input {
           position: absolute;
@@ -94,56 +89,24 @@
       }
     }
 
+    mat-slide-toggle {
+      padding-top: 10px;
+    }
+
     .actions {
       grid-column: 1 / -1;
       display: flex;
       gap: 8px;
-
-      button {
-        padding: 8px 14px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        background: #fff;
-        cursor: pointer;
-
-        &[type='submit'] {
-          background: #2563eb;
-          color: #fff;
-          border-color: #2563eb;
-
-          &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-          }
-        }
-      }
+      margin-top: 4px;
     }
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
+  .table-card {
+    padding: 0;
+    overflow-x: auto;
 
-    th,
-    td {
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
-    }
-
-    .row-actions {
-      display: flex;
-      gap: 8px;
-
-      button {
-        padding: 4px 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        background: #fff;
-        cursor: pointer;
-        font-size: 0.85rem;
-      }
+    table {
+      width: 100%;
     }
 
     .thumb {
@@ -155,11 +118,21 @@
     }
 
     .no-photo {
-      color: #bbb;
+      color: var(--mat-sys-outline);
     }
-  }
 
-  .empty {
-    color: #777;
+    .active-yes {
+      color: var(--mat-sys-tertiary);
+    }
+
+    .active-no {
+      color: var(--mat-sys-outline);
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+    }
   }
 }

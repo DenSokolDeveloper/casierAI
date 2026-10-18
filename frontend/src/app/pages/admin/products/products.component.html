@@ -1,124 +1,150 @@
 <div class="products-page">
   <div class="toolbar">
     <h2>Товары</h2>
-    <button type="button" (click)="startCreate()">+ Новый товар</button>
+    <button mat-flat-button color="primary" type="button" (click)="startCreate()">
+      <mat-icon>add</mat-icon>
+      Новый товар
+    </button>
   </div>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
-    <div class="field">
-      <label>Название</label>
-      <input type="text" formControlName="name" />
-    </div>
+  <mat-card appearance="outlined" class="entity-form-card">
+    <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Название</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
 
-    <div class="field">
-      <label>Категория</label>
-      <select formControlName="categoryId">
-        <option value="" disabled>Выберите категорию</option>
-        @for (category of categories(); track category._id) {
-          <option [value]="category._id">{{ category.name }}</option>
-        }
-      </select>
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Категория</mat-label>
+        <mat-select formControlName="categoryId">
+          @for (category of categories(); track category._id) {
+            <mat-option [value]="category._id">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-    <div class="field">
-      <label>Тип цены</label>
-      <select formControlName="priceType">
-        <option value="fixed">За штуку</option>
-        <option value="perWeight">За кг</option>
-      </select>
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Тип цены</mat-label>
+        <mat-select formControlName="priceType">
+          <mat-option value="fixed">За штуку</mat-option>
+          <mat-option value="perWeight">За кг</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-    <div class="field">
-      <label>Цена</label>
-      <input type="number" formControlName="price" min="0" step="0.01" />
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Цена</mat-label>
+        <input matInput type="number" formControlName="price" min="0" step="0.01" />
+      </mat-form-field>
 
-    <div class="field">
-      <label>Единица</label>
-      <input type="text" formControlName="unit" />
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Единица</mat-label>
+        <input matInput formControlName="unit" />
+      </mat-form-field>
 
-    <div class="field">
-      <label>Остаток</label>
-      <input type="number" formControlName="stockQty" min="0" step="0.001" />
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Остаток</mat-label>
+        <input matInput type="number" formControlName="stockQty" min="0" step="0.001" />
+      </mat-form-field>
 
-    <div class="field full">
-      <label>Визуальное описание (для распознавания)</label>
-      <textarea formControlName="visualDescription" rows="2"></textarea>
-    </div>
+      <mat-form-field appearance="outline" class="field-full">
+        <mat-label>Визуальное описание (для распознавания)</mat-label>
+        <textarea matInput formControlName="visualDescription" rows="2"></textarea>
+      </mat-form-field>
 
-    <div class="field photo-field">
-      <label>Фото (эталон)</label>
-      <div class="photo-row">
+      <div class="photo-field">
         @if (photoPreview()) {
           <img [src]="photoPreview()" class="photo-preview" alt="" />
         }
         <label class="photo-upload">
+          <mat-icon>photo_camera</mat-icon>
           Выбрать фото
           <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
         </label>
       </div>
-    </div>
 
-    <label class="checkbox">
-      <input type="checkbox" formControlName="active" />
-      Активен
-    </label>
+      <mat-slide-toggle formControlName="active">Активен</mat-slide-toggle>
 
-    <div class="actions">
-      <button type="submit" [disabled]="form.invalid">
-        {{ editingId() ? 'Сохранить' : 'Добавить' }}
-      </button>
-      @if (editingId()) {
-        <button type="button" (click)="cancelEdit()">Отмена</button>
-      }
-    </div>
-  </form>
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+          {{ editingId() ? 'Сохранить' : 'Добавить' }}
+        </button>
+        @if (editingId()) {
+          <button mat-stroked-button type="button" (click)="cancelEdit()">Отмена</button>
+        }
+      </div>
+    </form>
+  </mat-card>
 
   @if (isLoading()) {
-    <p>Загрузка…</p>
+    <div class="loading"><mat-spinner diameter="32" /></div>
   } @else if (products().length === 0) {
     <p class="empty">Товаров пока нет.</p>
   } @else {
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Название</th>
-          <th>Категория</th>
-          <th>Цена</th>
-          <th>Остаток</th>
-          <th>Активен</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (product of products(); track product._id) {
-          <tr>
-            <td>
-              @if (product.photoUrl) {
-                <img [src]="product.photoUrl" class="thumb" alt="" />
-              } @else {
-                <span class="no-photo">—</span>
-              }
-            </td>
-            <td>{{ product.name }}</td>
-            <td>{{ categoryName(product) }}</td>
-            <td>{{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}</td>
-            <td>{{ product.stockQty }} {{ product.unit }}</td>
-            <td>{{ product.active ? 'да' : 'нет' }}</td>
-            <td class="row-actions">
-              <button type="button" (click)="startEdit(product)">Изменить</button>
-              <button type="button" (click)="remove(product)">Удалить</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <mat-card appearance="outlined" class="table-card">
+      <table mat-table [dataSource]="products()">
+        <ng-container matColumnDef="photo">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let product">
+            @if (product.photoUrl) {
+              <img [src]="product.photoUrl" class="thumb" alt="" />
+            } @else {
+              <mat-icon class="no-photo">image_not_supported</mat-icon>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Название</th>
+          <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>Категория</th>
+          <td mat-cell *matCellDef="let product">{{ categoryName(product) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Цена</th>
+          <td mat-cell *matCellDef="let product">
+            {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef>Остаток</th>
+          <td mat-cell *matCellDef="let product">{{ product.stockQty }} {{ product.unit }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>Активен</th>
+          <td mat-cell *matCellDef="let product">
+            @if (product.active) {
+              <mat-icon class="active-yes">check_circle</mat-icon>
+            } @else {
+              <mat-icon class="active-no">cancel</mat-icon>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let product" class="row-actions">
+            <button mat-icon-button matTooltip="Изменить" (click)="startEdit(product)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Удалить" (click)="remove(product)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </mat-card>
   }
 </div>

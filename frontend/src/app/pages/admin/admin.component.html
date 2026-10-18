@@ -1,15 +1,35 @@
 <div class="admin-page">
-  <header>
-    <h1>Админка</h1>
-    <a routerLink="/">← На главную</a>
-  </header>
+  <mat-toolbar color="primary">
+    <mat-icon>admin_panel_settings</mat-icon>
+    <span class="title">Админка</span>
+    <span class="spacer"></span>
+    <a mat-button routerLink="/">
+      <mat-icon>arrow_back</mat-icon>
+      На главную
+    </a>
+  </mat-toolbar>
 
-  <nav class="tabs">
-    <a routerLink="dashboard" routerLinkActive="active">Дешборд</a>
-    <a routerLink="products" routerLinkActive="active">Товары</a>
-    <a routerLink="categories" routerLinkActive="active">Категории</a>
-    <a routerLink="users" routerLinkActive="active">Сотрудники</a>
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="admin-tabs">
+    <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">
+      <mat-icon>dashboard</mat-icon>
+      Дешборд
+    </a>
+    <a mat-tab-link routerLink="products" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">
+      <mat-icon>inventory_2</mat-icon>
+      Товары
+    </a>
+    <a mat-tab-link routerLink="categories" routerLinkActive #categoriesLink="routerLinkActive" [active]="categoriesLink.isActive">
+      <mat-icon>category</mat-icon>
+      Категории
+    </a>
+    <a mat-tab-link routerLink="users" routerLinkActive #usersLink="routerLinkActive" [active]="usersLink.isActive">
+      <mat-icon>groups</mat-icon>
+      Сотрудники
+    </a>
   </nav>
-
-  <router-outlet />
+  <mat-tab-nav-panel #tabPanel>
+    <div class="admin-content">
+      <router-outlet />
+    </div>
+  </mat-tab-nav-panel>
 </div>

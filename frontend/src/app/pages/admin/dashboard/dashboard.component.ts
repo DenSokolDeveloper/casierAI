@@ -1,6 +1,10 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import {
   DashboardSummary,
@@ -11,7 +15,7 @@ import {
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, MatCardModule, MatTableModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -28,6 +32,9 @@ export class DashboardComponent implements OnInit {
   protected readonly maxSalesTotal = computed(() =>
     Math.max(1, ...this.salesByDay().map((point) => point.total)),
   );
+
+  protected readonly topProductColumns = ['name', 'qty', 'revenue'];
+  protected readonly lowStockColumns = ['name', 'category', 'stockQty'];
 
   ngOnInit(): void {
     this.load();

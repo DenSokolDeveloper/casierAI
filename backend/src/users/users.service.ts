@@ -36,7 +36,7 @@ export class UsersService implements OnModuleInit {
 
     const email = this.config.get<string>('OWNER_EMAIL', 'owner@casierai.local');
     const configuredPassword = this.config.get<string>('OWNER_PASSWORD');
-    const password = configuredPassword ?? randomBytes(9).toString('base64url');
+    const password = configuredPassword ? configuredPassword : randomBytes(9).toString('base64url');
 
     await this.create({
       email,

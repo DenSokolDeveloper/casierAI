@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { RecognitionModule } from './recognition/recognition.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RecognitionModule } from './recognition/recognition.module';
     CategoriesModule,
     TransactionsModule,
     RecognitionModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

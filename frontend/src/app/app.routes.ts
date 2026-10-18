@@ -18,6 +18,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/admin.component').then((m) => m.AdminComponent),
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/admin/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent,
+          ),
+      },
+      {
         path: 'products',
         loadComponent: () =>
           import('./pages/admin/products/products.component').then((m) => m.ProductsComponent),
@@ -29,7 +36,7 @@ export const routes: Routes = [
             (m) => m.CategoriesComponent,
           ),
       },
-      { path: '', redirectTo: 'products', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
   { path: '**', redirectTo: '' },

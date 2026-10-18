@@ -1,0 +1,99 @@
+<div class="dashboard-page">
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p>Загрузка…</p>
+  } @else {
+    @if (summary(); as summary) {
+      <div class="summary-cards">
+        <div class="card">
+          <span class="label">Сегодня</span>
+          <span class="value">{{ summary.todayTotal | number: '1.0-2' }}</span>
+          <span class="sub">{{ summary.todayCount }} продаж</span>
+        </div>
+        <div class="card">
+          <span class="label">За 7 дней</span>
+          <span class="value">{{ summary.last7DaysTotal | number: '1.0-2' }}</span>
+          <span class="sub">{{ summary.last7DaysCount }} продаж</span>
+        </div>
+        <div class="card" [class.warning]="summary.lowStockCount > 0">
+          <span class="label">Низкий остаток</span>
+          <span class="value">{{ summary.lowStockCount }}</span>
+          <span class="sub">товаров</span>
+        </div>
+      </div>
+    }
+
+    <section class="chart-section">
+      <h2>Продажи за 7 дней</h2>
+      @if (salesByDay().length === 0) {
+        <p class="empty">Нет данных за период.</p>
+      } @else {
+        <div class="bar-chart">
+          @for (point of salesByDay(); track point.date) {
+            <div class="bar-column">
+              <div class="bar" [style.height.%]="(point.total / maxSalesTotal()) * 100">
+                <span class="bar-value">{{ point.total | number: '1.0-0' }}</span>
+              </div>
+              <span class="bar-label">{{ formatDay(point.date) }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="list-section">
+      <h2>Топ товаров (7 дней)</h2>
+      @if (topProducts().length === 0) {
+        <p class="empty">Пока нет продаж.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Кол-во</th>
+              <th>Выручка</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of topProducts(); track product.productId) {
+              <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.qty }}</td>
+                <td>{{ product.revenue | number: '1.0-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <section class="list-section">
+      <h2>Требуют пополнения</h2>
+      @if (lowStock().length === 0) {
+        <p class="empty">Остатки в норме.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Категория</th>
+              <th>Остаток</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of lowStock(); track product._id) {
+              <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ categoryName(product) }}</td>
+                <td class="low">{{ product.stockQty }} {{ product.unit }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  }
+</div>

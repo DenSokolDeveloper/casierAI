@@ -1,0 +1,44 @@
+.admin-page {
+  padding: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+
+    a {
+      padding: 8px 12px;
+      color: #333;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+
+      &.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+        font-weight: 600;
+      }
+    }
+  }
+}

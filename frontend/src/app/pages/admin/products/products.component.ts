@@ -1,0 +1,137 @@
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProductsService } from '../../../core/services/products.service';
+import { CategoriesService } from '../../../core/services/categories.service';
+import { Category, PriceType, Product } from '../../../core/models/catalog.models';
+
+@Component({
+  selector: 'app-admin-products',
+  imports: [ReactiveFormsModule],
+  templateUrl: './products.component.html',
+  styleUrl: './products.component.scss',
+})
+export class ProductsComponent implements OnInit {
+  private readonly productsService = inject(ProductsService);
+  private readonly categoriesService = inject(CategoriesService);
+  private readonly fb = inject(FormBuilder);
+
+  protected readonly products = signal<Product[]>([]);
+  protected readonly categories = signal<Category[]>([]);
+  protected readonly isLoading = signal(false);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly editingId = signal<string | null>(null);
+
+  protected readonly form = this.fb.group({
+    name: ['', Validators.required],
+    categoryId: ['', Validators.required],
+    priceType: ['fixed' as PriceType, Validators.required],
+    price: [0, [Validators.required, Validators.min(0)]],
+    unit: ['pcs'],
+    stockQty: [0, [Validators.min(0)]],
+    visualDescription: [''],
+    active: [true],
+  });
+
+  ngOnInit(): void {
+    this.categoriesService.list().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: () => this.errorMessage.set('Не удалось загрузить категории'),
+    });
+    this.load();
+  }
+
+  load(): void {
+    this.isLoading.set(true);
+    this.productsService.list().subscribe({
+      next: (products) => {
+        this.products.set(products);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('Не удалось загрузить товары');
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  categoryName(product: Product): string {
+    const category = product.categoryId;
+    return typeof category === 'string' ? category : category.name;
+  }
+
+  startCreate(): void {
+    this.editingId.set(null);
+    this.form.reset({
+      name: '',
+      categoryId: this.categories()[0]?._id ?? '',
+      priceType: 'fixed',
+      price: 0,
+      unit: 'pcs',
+      stockQty: 0,
+      visualDescription: '',
+      active: true,
+    });
+  }
+
+  startEdit(product: Product): void {
+    this.editingId.set(product._id);
+    const categoryId =
+      typeof product.categoryId === 'string' ? product.categoryId : product.categoryId._id;
+    this.form.setValue({
+      name: product.name,
+      categoryId,
+      priceType: product.priceType,
+      price: product.price,
+      unit: product.unit,
+      stockQty: product.stockQty,
+      visualDescription: product.visualDescription ?? '',
+      active: product.active,
+    });
+  }
+
+  cancelEdit(): void {
+    this.editingId.set(null);
+    this.startCreate();
+  }
+
+  submit(): void {
+    if (this.form.invalid) {
+      return;
+    }
+    const raw = this.form.getRawValue();
+    const payload = {
+      name: raw.name!,
+      categoryId: raw.categoryId!,
+      priceType: raw.priceType!,
+      price: raw.price!,
+      unit: raw.unit || undefined,
+      stockQty: raw.stockQty ?? undefined,
+      visualDescription: raw.visualDescription || undefined,
+      active: raw.active ?? undefined,
+    };
+    this.errorMessage.set(null);
+
+    const editingId = this.editingId();
+    const request = editingId
+      ? this.productsService.update(editingId, payload)
+      : this.productsService.create(payload);
+
+    request.subscribe({
+      next: () => {
+        this.cancelEdit();
+        this.load();
+      },
+      error: () => this.errorMessage.set('Не удалось сохранить товар'),
+    });
+  }
+
+  remove(product: Product): void {
+    if (!confirm(`Удалить товар "${product.name}"?`)) {
+      return;
+    }
+    this.productsService.remove(product._id).subscribe({
+      next: () => this.load(),
+      error: () => this.errorMessage.set('Не удалось удалить товар'),
+    });
+  }
+}

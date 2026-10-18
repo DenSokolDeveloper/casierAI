@@ -7,5 +7,9 @@
     <button (click)="authService.logout()">Выйти</button>
   </header>
 
-  <p class="placeholder">Касса/админка появятся на следующих шагах.</p>
+  @if (authService.currentUser()?.role === 'owner') {
+    <a class="admin-link" routerLink="/admin">Открыть админку →</a>
+  }
+
+  <p class="placeholder">Экран кассы появится на следующих шагах.</p>
 </div>

@@ -1,0 +1,103 @@
+<div class="products-page">
+  <div class="toolbar">
+    <h2>Товары</h2>
+    <button type="button" (click)="startCreate()">+ Новый товар</button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label>Название</label>
+      <input type="text" formControlName="name" />
+    </div>
+
+    <div class="field">
+      <label>Категория</label>
+      <select formControlName="categoryId">
+        <option value="" disabled>Выберите категорию</option>
+        @for (category of categories(); track category._id) {
+          <option [value]="category._id">{{ category.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Тип цены</label>
+      <select formControlName="priceType">
+        <option value="fixed">За штуку</option>
+        <option value="perWeight">За кг</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Цена</label>
+      <input type="number" formControlName="price" min="0" step="0.01" />
+    </div>
+
+    <div class="field">
+      <label>Единица</label>
+      <input type="text" formControlName="unit" />
+    </div>
+
+    <div class="field">
+      <label>Остаток</label>
+      <input type="number" formControlName="stockQty" min="0" step="0.001" />
+    </div>
+
+    <div class="field full">
+      <label>Визуальное описание (для распознавания)</label>
+      <textarea formControlName="visualDescription" rows="2"></textarea>
+    </div>
+
+    <label class="checkbox">
+      <input type="checkbox" formControlName="active" />
+      Активен
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">
+        {{ editingId() ? 'Сохранить' : 'Добавить' }}
+      </button>
+      @if (editingId()) {
+        <button type="button" (click)="cancelEdit()">Отмена</button>
+      }
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <p>Загрузка…</p>
+  } @else if (products().length === 0) {
+    <p class="empty">Товаров пока нет.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Категория</th>
+          <th>Цена</th>
+          <th>Остаток</th>
+          <th>Активен</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (product of products(); track product._id) {
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ categoryName(product) }}</td>
+            <td>{{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}</td>
+            <td>{{ product.stockQty }} {{ product.unit }}</td>
+            <td>{{ product.active ? 'да' : 'нет' }}</td>
+            <td class="row-actions">
+              <button type="button" (click)="startEdit(product)">Изменить</button>
+              <button type="button" (click)="remove(product)">Удалить</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

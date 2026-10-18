@@ -1,0 +1,51 @@
+<div class="categories-page">
+  <div class="toolbar">
+    <h2>Категории</h2>
+    <button type="button" (click)="startCreate()">+ Новая категория</button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
+    <input type="text" formControlName="name" placeholder="Название" />
+    <input type="text" formControlName="description" placeholder="Описание (необязательно)" />
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">
+        {{ editingId() ? 'Сохранить' : 'Добавить' }}
+      </button>
+      @if (editingId()) {
+        <button type="button" (click)="cancelEdit()">Отмена</button>
+      }
+    </div>
+  </form>
+
+  @if (isLoading()) {
+    <p>Загрузка…</p>
+  } @else if (categories().length === 0) {
+    <p class="empty">Категорий пока нет.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Описание</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of categories(); track category._id) {
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.description || '—' }}</td>
+            <td class="row-actions">
+              <button type="button" (click)="startEdit(category)">Изменить</button>
+              <button type="button" (click)="remove(category)">Удалить</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

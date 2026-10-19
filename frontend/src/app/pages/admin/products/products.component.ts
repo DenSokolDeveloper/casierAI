@@ -61,12 +61,45 @@ export class ProductsComponent implements OnInit {
     active: [true],
   });
 
+  private static readonly FIXED_UNIT_OPTIONS = [
+    { value: 'pcs', labelKey: 'admin.products.unitPcs' },
+    { value: 'pack', labelKey: 'admin.products.unitPack' },
+    { value: 'box', labelKey: 'admin.products.unitBox' },
+    { value: 'bottle', labelKey: 'admin.products.unitBottle' },
+  ];
+
+  private static readonly WEIGHT_UNIT_OPTIONS = [
+    { value: 'kg', labelKey: 'admin.products.unitKg' },
+    { value: 'l', labelKey: 'admin.products.unitL' },
+  ];
+
   ngOnInit(): void {
     this.categoriesService.list().subscribe({
       next: (categories) => this.categories.set(categories),
       error: () => this.errorMessage.set('admin.products.loadCategoriesError'),
     });
     this.load();
+
+    this.form.get('priceType')!.valueChanges.subscribe((priceType) => {
+      // Only nudge the default for a brand-new product - never silently
+      // rewrite an existing product's unit just because the form re-emits.
+      if (this.editingId()) {
+        return;
+      }
+      this.form.get('unit')!.setValue(priceType === 'perWeight' ? 'kg' : 'pcs');
+    });
+  }
+
+  protected unitOptions(): { value: string; labelKey: string }[] {
+    const isWeight = this.form.get('priceType')?.value === 'perWeight';
+    const options = isWeight ? ProductsComponent.WEIGHT_UNIT_OPTIONS : ProductsComponent.FIXED_UNIT_OPTIONS;
+    const current = this.form.get('unit')?.value;
+    if (current && !options.some((option) => option.value === current)) {
+      // A legacy/custom unit value already saved on this product - keep it
+      // selectable instead of silently hiding it behind a blank select.
+      return [...options, { value: current, labelKey: '' }];
+    }
+    return options;
   }
 
   load(): void {

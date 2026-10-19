@@ -53,7 +53,13 @@
 
       <mat-form-field appearance="outline">
         <mat-label>{{ 'admin.products.unit' | translate }}</mat-label>
-        <input matInput formControlName="unit" />
+        <mat-select formControlName="unit">
+          @for (option of unitOptions(); track option.value) {
+            <mat-option [value]="option.value">
+              {{ option.labelKey ? (option.labelKey | translate) : option.value }}
+            </mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline">

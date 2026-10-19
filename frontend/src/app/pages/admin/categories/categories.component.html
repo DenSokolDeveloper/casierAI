@@ -11,7 +11,7 @@
     <p class="error">{{ errorMessage() | translate }}</p>
   }
 
-  <mat-card appearance="outlined" class="entity-form-card">
+  <mat-card class="entity-form-card">
     <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'admin.categories.name' | translate }}</mat-label>
@@ -50,7 +50,7 @@
   } @else if (categories().length === 0) {
     <p class="empty">{{ 'admin.categories.empty' | translate }}</p>
   } @else {
-    <mat-card appearance="outlined" class="table-card">
+    <mat-card class="table-card">
       <table mat-table [dataSource]="categories()">
         <ng-container matColumnDef="photo">
           <th mat-header-cell *matHeaderCellDef></th>

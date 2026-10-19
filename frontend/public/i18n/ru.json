@@ -14,7 +14,6 @@
   },
   "auth": {
     "login": {
-      "subtitle": "Вход для кассира",
       "email": "Email",
       "password": "Пароль",
       "submit": "Войти",

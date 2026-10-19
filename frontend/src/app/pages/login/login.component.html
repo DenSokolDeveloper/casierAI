@@ -1,12 +1,11 @@
 <div class="auth-page">
-  <mat-card class="auth-card" appearance="outlined">
+  <mat-card class="auth-card">
     <div class="brand">
       <mat-icon class="brand-icon">storefront</mat-icon>
       <h1>CasierAI</h1>
       <span class="spacer"></span>
       <app-language-switcher />
     </div>
-    <p class="subtitle">{{ 'auth.login.subtitle' | translate }}</p>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
       <mat-form-field appearance="outline">

@@ -10,7 +10,7 @@
   } @else {
     @if (summary(); as summary) {
       <div class="summary-cards">
-        <mat-card appearance="outlined" class="stat-card">
+        <mat-card class="stat-card">
           <mat-icon class="stat-icon">today</mat-icon>
           <div class="stat-body">
             <span class="label">{{ 'admin.dashboard.today' | translate }}</span>
@@ -18,7 +18,7 @@
             <span class="sub">{{ summary.todayCount }} {{ 'admin.dashboard.salesCount' | translate }}</span>
           </div>
         </mat-card>
-        <mat-card appearance="outlined" class="stat-card">
+        <mat-card class="stat-card">
           <mat-icon class="stat-icon">date_range</mat-icon>
           <div class="stat-body">
             <span class="label">{{ 'admin.dashboard.last7Days' | translate }}</span>
@@ -26,7 +26,7 @@
             <span class="sub">{{ summary.last7DaysCount }} {{ 'admin.dashboard.salesCount' | translate }}</span>
           </div>
         </mat-card>
-        <mat-card appearance="outlined" class="stat-card" [class.warning]="summary.lowStockCount > 0">
+        <mat-card class="stat-card" [class.warning]="summary.lowStockCount > 0">
           <mat-icon class="stat-icon">warning</mat-icon>
           <div class="stat-body">
             <span class="label">{{ 'admin.dashboard.lowStock' | translate }}</span>
@@ -37,7 +37,7 @@
       </div>
     }
 
-    <mat-card appearance="outlined" class="chart-section">
+    <mat-card class="chart-section">
       <h2>{{ 'admin.dashboard.salesChartTitle' | translate }}</h2>
       @if (salesByDay().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noChartData' | translate }}</p>
@@ -55,7 +55,7 @@
       }
     </mat-card>
 
-    <mat-card appearance="outlined" class="list-section">
+    <mat-card class="list-section">
       <h2>{{ 'admin.dashboard.topProductsTitle' | translate }}</h2>
       @if (topProducts().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noSales' | translate }}</p>
@@ -79,7 +79,7 @@
       }
     </mat-card>
 
-    <mat-card appearance="outlined" class="list-section">
+    <mat-card class="list-section">
       <h2>{{ 'admin.dashboard.restockTitle' | translate }}</h2>
       @if (lowStock().length === 0) {
         <p class="empty">{{ 'admin.dashboard.stockOk' | translate }}</p>

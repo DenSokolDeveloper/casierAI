@@ -20,18 +20,17 @@
   </mat-toolbar>
 
   <div class="pos-content">
-    <mat-card class="camera-card" appearance="outlined">
-      <div class="camera-frame">
+    <mat-card class="camera-card">
+      <div class="camera-frame" [class.unavailable]="cameraError()">
         <video #video playsinline muted></video>
         <canvas #canvas hidden></canvas>
+        @if (cameraError()) {
+          <div class="camera-placeholder">
+            <mat-icon>videocam_off</mat-icon>
+            <span>{{ cameraError() | translate }}</span>
+          </div>
+        }
       </div>
-
-      @if (cameraError()) {
-        <p class="hint error">
-          <mat-icon inline>warning</mat-icon>
-          {{ cameraError() | translate }}
-        </p>
-      }
 
       <div class="camera-actions">
         <button
@@ -76,7 +75,7 @@
     </mat-card>
 
     @if (pendingWeightItem(); as item) {
-      <mat-card class="floating-card weight-dialog" appearance="outlined">
+      <mat-card class="floating-card weight-dialog">
         <p>{{ 'pos.weightPrompt' | translate: { name: item.name } }}</p>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'pos.weightLabel' | translate }}</mat-label>
@@ -91,7 +90,7 @@
       </mat-card>
     }
 
-    <mat-card class="manual-card" appearance="outlined">
+    <mat-card class="manual-card">
       <button mat-button class="link-button" (click)="toggleManualSearch()">
         <mat-icon>{{ manualSearchOpen() ? 'expand_less' : 'search' }}</mat-icon>
         {{ (manualSearchOpen() ? 'pos.hideManualSearch' : 'pos.showManualSearch') | translate }}
@@ -119,7 +118,7 @@
       }
     </mat-card>
 
-    <mat-card class="cart-card" appearance="outlined">
+    <mat-card class="cart-card">
       <h2>{{ 'pos.cartTitle' | translate }}</h2>
       @if (cart().length === 0) {
         <p class="hint">{{ 'pos.cartEmpty' | translate }}</p>
@@ -170,7 +169,7 @@
   </div>
 
   @if (lastReceiptTotal(); as receiptTotal) {
-    <mat-card class="floating-card receipt-dialog" appearance="outlined">
+    <mat-card class="floating-card receipt-dialog">
       <mat-icon class="success-icon">check_circle</mat-icon>
       <p>{{ 'pos.receiptDone' | translate }} <strong>{{ receiptTotal }}</strong></p>
       <p class="hint">{{ 'pos.receiptHint' | translate }}</p>

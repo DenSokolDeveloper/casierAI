@@ -74,6 +74,9 @@ export class DashboardComponent implements OnInit {
 
   protected categoryName(product: LowStockProduct): string {
     const category = product.categoryId;
+    if (!category) {
+      return '—';
+    }
     return typeof category === 'string' ? category : category.name;
   }
 

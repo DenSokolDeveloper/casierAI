@@ -85,6 +85,9 @@ export class ProductsComponent implements OnInit {
 
   categoryName(product: Product): string {
     const category = product.categoryId;
+    if (!category) {
+      return '—';
+    }
     return typeof category === 'string' ? category : category.name;
   }
 

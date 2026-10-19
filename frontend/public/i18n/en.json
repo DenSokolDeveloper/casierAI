@@ -41,7 +41,6 @@
     "recognizeNoMatch": "Item not recognized — pick it manually below",
     "recognizeError": "Recognition failed — pick the item manually",
     "confidenceSuffix": "match",
-    "weightPrompt": "{{name}} — enter the weight, kg",
     "weightLabel": "Weight, kg",
     "hideManualSearch": "Hide manual search",
     "showManualSearch": "Add item manually",

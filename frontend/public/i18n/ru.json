@@ -41,7 +41,6 @@
     "recognizeNoMatch": "Товар не распознан — выберите вручную ниже",
     "recognizeError": "Ошибка распознавания — выберите товар вручную",
     "confidenceSuffix": "совпадение",
-    "weightPrompt": "{{name}} — укажите вес, кг",
     "weightLabel": "Вес, кг",
     "hideManualSearch": "Скрыть ручной поиск",
     "showManualSearch": "Добавить товар вручную",

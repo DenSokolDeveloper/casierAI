@@ -41,7 +41,6 @@
     "recognizeNoMatch": "Товар не розпізнано — оберіть вручну нижче",
     "recognizeError": "Помилка розпізнавання — оберіть товар вручну",
     "confidenceSuffix": "збіг",
-    "weightPrompt": "{{name}} — вкажіть вагу, кг",
     "weightLabel": "Вага, кг",
     "hideManualSearch": "Сховати ручний пошук",
     "showManualSearch": "Додати товар вручну",

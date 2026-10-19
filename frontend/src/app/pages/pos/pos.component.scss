@@ -36,7 +36,6 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
   box-sizing: border-box;
 }
 
@@ -53,7 +52,13 @@
   }
 }
 
-.camera-card {
+// Flat by design: no card background or border around whole sections.
+// Grouping comes from whitespace and the section headers instead.
+.select-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
   .camera-frame {
     position: relative;
     width: 100%;
@@ -101,7 +106,6 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 12px;
 
     .capture-btn {
       flex: 1;
@@ -115,8 +119,9 @@
       gap: 6px;
       padding: 0 14px;
       height: 44px;
-      border: 1px solid var(--mat-sys-outline);
+      border: none;
       border-radius: 20px;
+      background: var(--mat-sys-surface-container-high);
       font-size: 0.85rem;
       color: var(--mat-sys-on-surface);
       cursor: pointer;
@@ -131,21 +136,131 @@
       }
     }
   }
+}
 
-  .candidates {
-    margin-top: 8px;
+// Selectable product results (camera candidates + manual search) as
+// tappable tiles, so picking a product reads clearly even without a
+// wrapping card around the whole section.
+.product-tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .product-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-high);
+    text-align: left;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--mat-sys-surface-container-highest);
+    }
+
+    .tile-icon {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .tile-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tile-meta {
+      font-size: 0.8rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
   }
 }
 
-.floating-card {
+.manual-section {
+  margin-top: 16px;
+
+  .manual-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    font: var(--mat-sys-label-large);
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  .manual-search {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .full-width {
+      width: 100%;
+    }
+  }
+}
+
+.dialog-backdrop {
   position: fixed;
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
-  width: calc(100% - 32px);
-  max-width: 440px;
-  z-index: 20;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px;
+  padding-top: max(16px, 8vh);
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+}
+
+.dialog-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  --mdc-elevated-card-container-elevation: var(--mat-sys-level3);
   box-shadow: var(--mat-sys-level3);
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 
   .full-width {
     width: 100%;
@@ -153,8 +268,72 @@
 
   .actions {
     display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 20px;
+  }
+}
+
+.weight-dialog {
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .dialog-icon {
+      flex: 0 0 auto;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    .dialog-subtitle {
+      margin: 2px 0 0;
+      font-size: 0.85rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  .weight-amount {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
     gap: 8px;
-    margin-top: 8px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-high);
+
+    .weight-input {
+      flex: 0 1 auto;
+      width: 100%;
+      max-width: 160px;
+      border: none;
+      background: transparent;
+      outline: none;
+      text-align: right;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--mat-sys-on-surface);
+      font-family: inherit;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+
+    .unit {
+      font-size: 1.1rem;
+      color: var(--mat-sys-on-surface-variant);
+    }
   }
 }
 
@@ -179,25 +358,25 @@
   }
 }
 
-.manual-card {
-  .link-button {
-    width: 100%;
-    justify-content: flex-start;
-  }
+// Flat too, like .select-section - separated from it purely by the
+// section header + generous top spacing, not a card background.
+.cart-section {
+  margin-top: 32px;
 
-  .manual-search {
-    margin-top: 8px;
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
 
-    .full-width {
-      width: 100%;
+    mat-icon {
+      color: var(--mat-sys-primary);
     }
-  }
-}
 
-.cart-card {
-  h2 {
-    margin: 0 0 8px;
-    font-size: 1.05rem;
+    h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
   }
 
   .row-meta {

@@ -51,6 +51,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --mdc-elevated-card-container-shape: 16px;
   --mdc-outlined-card-container-shape: 16px;
   --mat-card-outlined-outline-width: 0;
+  // Flat by default - cards separate from the page by background color
+  // alone, not a shadow ring (which reads as an unwanted outline).
+  // Dialog/modal cards opt back into a shadow locally (see .dialog-card).
+  --mdc-elevated-card-container-elevation: none;
 }
 
 .mat-mdc-unelevated-button,

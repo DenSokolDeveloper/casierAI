@@ -20,7 +20,7 @@
   </mat-toolbar>
 
   <div class="pos-content">
-    <mat-card class="camera-card">
+    <section class="select-section">
       <div class="camera-frame" [class.unavailable]="cameraError()">
         <video #video playsinline muted></video>
         <canvas #canvas hidden></canvas>
@@ -59,67 +59,103 @@
       }
 
       @if (candidates().length > 0) {
-        <mat-nav-list class="candidates">
+        <div class="product-tiles">
           @for (candidate of candidates(); track candidate.productId) {
-            <a mat-list-item (click)="selectCandidate(candidate)">
-              <mat-icon matListItemIcon>inventory_2</mat-icon>
-              <span matListItemTitle>{{ candidate.name }}</span>
-              <span matListItemLine>
-                {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
-                · {{ (candidate.confidence * 100) | number: '1.0-0' }}% {{ 'pos.confidenceSuffix' | translate }}
+            <button type="button" class="product-tile" (click)="selectCandidate(candidate)">
+              <span class="tile-icon"><mat-icon>inventory_2</mat-icon></span>
+              <span class="tile-body">
+                <span class="tile-name">{{ candidate.name }}</span>
+                <span class="tile-meta">
+                  {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
+                  · {{ (candidate.confidence * 100) | number: '1.0-0' }}% {{ 'pos.confidenceSuffix' | translate }}
+                </span>
               </span>
-            </a>
+            </button>
           }
-        </mat-nav-list>
+        </div>
       }
-    </mat-card>
+
+      <div class="manual-section">
+        <button type="button" class="manual-toggle" (click)="toggleManualSearch()">
+          <mat-icon>{{ manualSearchOpen() ? 'expand_less' : 'search' }}</mat-icon>
+          {{ (manualSearchOpen() ? 'pos.hideManualSearch' : 'pos.showManualSearch') | translate }}
+        </button>
+
+        @if (manualSearchOpen()) {
+          <div class="manual-search">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'pos.searchPlaceholder' | translate }}</mat-label>
+              <input matInput type="text" [(ngModel)]="manualSearchTerm" />
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            @if (manualResults().length > 0) {
+              <div class="product-tiles">
+                @for (product of manualResults(); track product._id) {
+                  <button type="button" class="product-tile" (click)="selectManualProduct(product)">
+                    <span class="tile-icon"><mat-icon>inventory_2</mat-icon></span>
+                    <span class="tile-body">
+                      <span class="tile-name">{{ product.name }}</span>
+                      <span class="tile-meta">
+                        {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
+                      </span>
+                    </span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
 
     @if (pendingWeightItem(); as item) {
-      <mat-card class="floating-card weight-dialog">
-        <p>{{ 'pos.weightPrompt' | translate: { name: item.name } }}</p>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'pos.weightLabel' | translate }}</mat-label>
-          <input matInput type="number" min="0.001" step="0.001" [(ngModel)]="weightInputKg" />
-        </mat-form-field>
-        <div class="actions">
-          <button mat-flat-button color="primary" [disabled]="weightInputKg <= 0" (click)="confirmWeight()">
-            {{ 'common.add' | translate }}
-          </button>
-          <button mat-stroked-button (click)="cancelWeight()">{{ 'common.cancel' | translate }}</button>
-        </div>
-      </mat-card>
+      <div class="dialog-backdrop" (click)="cancelWeight()">
+        <mat-card class="dialog-card weight-dialog" (click)="$event.stopPropagation()">
+          <div class="dialog-header">
+            <mat-icon class="dialog-icon">scale</mat-icon>
+            <div>
+              <h3>{{ item.name }}</h3>
+              <p class="dialog-subtitle">{{ 'pos.weightLabel' | translate }}</p>
+            </div>
+          </div>
+
+          <div class="weight-amount">
+            <input
+              class="weight-input"
+              type="number"
+              inputmode="decimal"
+              min="0.001"
+              step="0.001"
+              placeholder="0"
+              [(ngModel)]="weightInputKg"
+              autofocus
+              (focus)="$any($event.target).select()"
+            />
+            <span class="unit">кг</span>
+          </div>
+
+          <div class="actions">
+            <button mat-button (click)="cancelWeight()">{{ 'common.cancel' | translate }}</button>
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="!weightInputKg || weightInputKg <= 0"
+              (click)="confirmWeight()"
+            >
+              {{ 'common.add' | translate }}
+            </button>
+          </div>
+        </mat-card>
+      </div>
     }
 
-    <mat-card class="manual-card">
-      <button mat-button class="link-button" (click)="toggleManualSearch()">
-        <mat-icon>{{ manualSearchOpen() ? 'expand_less' : 'search' }}</mat-icon>
-        {{ (manualSearchOpen() ? 'pos.hideManualSearch' : 'pos.showManualSearch') | translate }}
-      </button>
+    <section class="cart-section">
+      <div class="section-header">
+        <mat-icon>receipt_long</mat-icon>
+        <h2>{{ 'pos.cartTitle' | translate }}</h2>
+      </div>
 
-      @if (manualSearchOpen()) {
-        <div class="manual-search">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'pos.searchPlaceholder' | translate }}</mat-label>
-            <input matInput type="text" [(ngModel)]="manualSearchTerm" />
-            <mat-icon matSuffix>search</mat-icon>
-          </mat-form-field>
-          <mat-nav-list>
-            @for (product of manualResults(); track product._id) {
-              <a mat-list-item (click)="selectManualProduct(product)">
-                <mat-icon matListItemIcon>inventory_2</mat-icon>
-                <span matListItemTitle>{{ product.name }}</span>
-                <span matListItemLine>
-                  {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
-                </span>
-              </a>
-            }
-          </mat-nav-list>
-        </div>
-      }
-    </mat-card>
-
-    <mat-card class="cart-card">
-      <h2>{{ 'pos.cartTitle' | translate }}</h2>
       @if (cart().length === 0) {
         <p class="hint">{{ 'pos.cartEmpty' | translate }}</p>
       } @else {
@@ -165,17 +201,19 @@
         }
         {{ (isCheckingOut() ? 'pos.checkingOut' : 'pos.checkoutButton') | translate }}
       </button>
-    </mat-card>
+    </section>
   </div>
 
   @if (lastReceiptTotal(); as receiptTotal) {
-    <mat-card class="floating-card receipt-dialog">
-      <mat-icon class="success-icon">check_circle</mat-icon>
-      <p>{{ 'pos.receiptDone' | translate }} <strong>{{ receiptTotal }}</strong></p>
-      <p class="hint">{{ 'pos.receiptHint' | translate }}</p>
-      <button mat-flat-button color="primary" (click)="dismissReceipt()">
-        {{ 'pos.nextCustomer' | translate }}
-      </button>
-    </mat-card>
+    <div class="dialog-backdrop">
+      <mat-card class="dialog-card receipt-dialog">
+        <mat-icon class="success-icon">check_circle</mat-icon>
+        <p>{{ 'pos.receiptDone' | translate }} <strong>{{ receiptTotal }}</strong></p>
+        <p class="hint">{{ 'pos.receiptHint' | translate }}</p>
+        <button mat-flat-button color="primary" (click)="dismissReceipt()">
+          {{ 'pos.nextCustomer' | translate }}
+        </button>
+      </mat-card>
+    </div>
   }
 </div>

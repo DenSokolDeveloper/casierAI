@@ -41,7 +41,6 @@
     "recognizeNoMatch": "Produkt nie został rozpoznany — wybierz ręcznie poniżej",
     "recognizeError": "Błąd rozpoznawania — wybierz produkt ręcznie",
     "confidenceSuffix": "dopasowanie",
-    "weightPrompt": "{{name}} — podaj wagę, kg",
     "weightLabel": "Waga, kg",
     "hideManualSearch": "Ukryj ręczne wyszukiwanie",
     "showManualSearch": "Dodaj produkt ręcznie",

@@ -68,7 +68,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly recognizeMessage = signal<string | null>(null);
 
   protected readonly pendingWeightItem = signal<RecognitionCandidate | Product | null>(null);
-  protected weightInputKg = 0;
+  protected weightInputKg: number | null = null;
 
   protected readonly manualSearchOpen = signal(false);
   protected manualSearchTerm = '';
@@ -190,7 +190,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected selectCandidate(candidate: RecognitionCandidate): void {
     if (candidate.priceType === 'perWeight') {
-      this.weightInputKg = 0;
+      this.weightInputKg = null;
       this.pendingWeightItem.set(candidate);
       return;
     }
@@ -207,7 +207,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected selectManualProduct(product: Product): void {
     if (product.priceType === 'perWeight') {
-      this.weightInputKg = 0;
+      this.weightInputKg = null;
       this.pendingWeightItem.set(product);
       return;
     }
@@ -223,7 +223,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected confirmWeight(): void {
     const item = this.pendingWeightItem();
-    if (!item || this.weightInputKg <= 0) {
+    if (!item || !this.weightInputKg || this.weightInputKg <= 0) {
       return;
     }
     const isCandidate = 'confidence' in item;

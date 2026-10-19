@@ -14,8 +14,8 @@ export class Product {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Types.ObjectId, ref: Category.name, required: true })
-  categoryId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: Category.name })
+  categoryId?: Types.ObjectId;
 
   @Prop({ required: true, enum: ['fixed', 'perWeight'], default: 'fixed' })
   priceType: PriceType;

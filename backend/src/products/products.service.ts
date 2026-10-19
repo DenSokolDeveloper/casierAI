@@ -21,8 +21,11 @@ export class ProductsService {
   }
 
   async create(dto: CreateProductDto, shopId: Types.ObjectId) {
-    await this.assertCategoryInShop(dto.categoryId, shopId);
-    return this.productModel.create({ ...dto, shopId });
+    const { categoryId, ...rest } = dto;
+    if (categoryId) {
+      await this.assertCategoryInShop(categoryId, shopId);
+    }
+    return this.productModel.create({ ...rest, categoryId: categoryId ?? undefined, shopId });
   }
 
   findAll(shopId: Types.ObjectId) {
@@ -42,11 +45,26 @@ export class ProductsService {
   }
 
   async update(id: string, dto: UpdateProductDto, shopId: Types.ObjectId) {
-    if (dto.categoryId) {
-      await this.assertCategoryInShop(dto.categoryId, shopId);
+    const { categoryId, ...rest } = dto;
+    if (categoryId) {
+      await this.assertCategoryInShop(categoryId, shopId);
     }
+
+    const setFields: Record<string, unknown> = { ...rest };
+    const unsetFields: Record<string, 1> = {};
+    if (categoryId === null) {
+      unsetFields.categoryId = 1;
+    } else if (categoryId !== undefined) {
+      setFields.categoryId = categoryId;
+    }
+
+    const update: Record<string, unknown> = { $set: setFields };
+    if (Object.keys(unsetFields).length > 0) {
+      update.$unset = unsetFields;
+    }
+
     const product = await this.productModel
-      .findOneAndUpdate({ _id: id, shopId }, dto, { new: true })
+      .findOneAndUpdate({ _id: id, shopId }, update, { new: true })
       .exec();
     if (!product) {
       throw new NotFoundException(`Product ${id} not found`);

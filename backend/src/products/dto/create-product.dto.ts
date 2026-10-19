@@ -13,8 +13,9 @@ export class CreateProductDto {
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsMongoId()
-  categoryId: string;
+  categoryId?: string | null;
 
   @IsIn(['fixed', 'perWeight'])
   priceType: PriceType;

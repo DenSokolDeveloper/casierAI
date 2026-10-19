@@ -32,6 +32,7 @@
       <mat-form-field appearance="outline">
         <mat-label>{{ 'admin.products.category' | translate }}</mat-label>
         <mat-select formControlName="categoryId">
+          <mat-option value="">{{ 'admin.products.noCategory' | translate }}</mat-option>
           @for (category of categories(); track category._id) {
             <mat-option [value]="category._id">{{ category.name }}</mat-option>
           }

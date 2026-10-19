@@ -102,6 +102,7 @@
       "deleteError": "Could not delete the product",
       "name": "Name",
       "category": "Category",
+      "noCategory": "No category",
       "priceType": "Price type",
       "priceFixed": "Per item",
       "priceWeight": "Per kg",

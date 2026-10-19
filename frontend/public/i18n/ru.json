@@ -102,6 +102,7 @@
       "deleteError": "Не удалось удалить товар",
       "name": "Название",
       "category": "Категория",
+      "noCategory": "Без категории",
       "priceType": "Тип цены",
       "priceFixed": "За штуку",
       "priceWeight": "За кг",

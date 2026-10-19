@@ -102,6 +102,7 @@
       "deleteError": "Nie udało się usunąć produktu",
       "name": "Nazwa",
       "category": "Kategoria",
+      "noCategory": "Bez kategorii",
       "priceType": "Typ ceny",
       "priceFixed": "Za sztukę",
       "priceWeight": "Za kg",

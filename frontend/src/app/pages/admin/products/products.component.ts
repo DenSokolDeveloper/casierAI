@@ -52,7 +52,7 @@ export class ProductsComponent implements OnInit {
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],
-    categoryId: ['', Validators.required],
+    categoryId: [''],
     priceType: ['fixed' as PriceType, Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
     unit: ['pcs'],
@@ -128,7 +128,7 @@ export class ProductsComponent implements OnInit {
     this.editingId.set(null);
     this.form.reset({
       name: '',
-      categoryId: this.categories()[0]?._id ?? '',
+      categoryId: '',
       priceType: 'fixed',
       price: 0,
       unit: 'pcs',
@@ -185,7 +185,7 @@ export class ProductsComponent implements OnInit {
     const raw = this.form.getRawValue();
     const payload = {
       name: raw.name!,
-      categoryId: raw.categoryId!,
+      categoryId: raw.categoryId || null,
       priceType: raw.priceType!,
       price: raw.price!,
       unit: raw.unit || undefined,

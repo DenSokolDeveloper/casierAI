@@ -109,58 +109,83 @@
       </div>
     </section>
 
-    @if (pendingWeightItem(); as item) {
-      <div class="dialog-backdrop" (click)="cancelWeight()">
-        <mat-card class="dialog-card weight-dialog" (click)="$event.stopPropagation()">
+    @if (pendingCartItem(); as item) {
+      <div class="dialog-backdrop" (click)="cancelCartItem()">
+        <mat-card class="dialog-card qty-dialog" (click)="$event.stopPropagation()">
           <div class="dialog-header">
-            <mat-icon class="dialog-icon">scale</mat-icon>
+            <mat-icon class="dialog-icon">
+              {{ item.priceType === 'perWeight' ? 'scale' : 'shopping_basket' }}
+            </mat-icon>
             <div>
               <h3>{{ item.name }}</h3>
-              <p class="dialog-subtitle">{{ 'pos.weightLabel' | translate }}</p>
+              <p class="dialog-subtitle">
+                {{ (item.priceType === 'perWeight' ? 'pos.weightLabel' : 'pos.qtyLabel') | translate }}
+              </p>
             </div>
           </div>
 
-          <div class="weight-amount">
-            <input
-              class="weight-input"
-              type="number"
-              inputmode="decimal"
-              min="0.001"
-              step="0.001"
-              placeholder="0"
-              [(ngModel)]="weightDisplayValue"
-              autofocus
-              (focus)="$any($event.target).select()"
-            />
-            @if (hasSubUnit(item.unit)) {
-              <div class="unit-switch">
-                <button
-                  type="button"
-                  [class.active]="weightUnitFactor() === 1"
-                  (click)="setWeightUnitFactor(1)"
-                >
-                  {{ item.unit }}
-                </button>
-                <button
-                  type="button"
-                  [class.active]="weightUnitFactor() === 1000"
-                  (click)="setWeightUnitFactor(1000)"
-                >
-                  {{ subUnitLabelKey(item.unit) | translate }}
-                </button>
-              </div>
-            } @else {
-              <span class="unit">{{ item.unit }}</span>
-            }
-          </div>
+          @if (item.priceType === 'perWeight') {
+            <div class="weight-amount">
+              <input
+                class="weight-input"
+                type="number"
+                inputmode="decimal"
+                min="0.001"
+                step="0.001"
+                placeholder="0"
+                [(ngModel)]="weightDisplayValue"
+                autofocus
+                (focus)="$any($event.target).select()"
+              />
+              @if (hasSubUnit(item.unit)) {
+                <div class="unit-switch">
+                  <button
+                    type="button"
+                    [class.active]="weightUnitFactor() === 1"
+                    (click)="setWeightUnitFactor(1)"
+                  >
+                    {{ item.unit }}
+                  </button>
+                  <button
+                    type="button"
+                    [class.active]="weightUnitFactor() === 1000"
+                    (click)="setWeightUnitFactor(1000)"
+                  >
+                    {{ subUnitLabelKey(item.unit) | translate }}
+                  </button>
+                </div>
+              } @else {
+                <span class="unit">{{ item.unit }}</span>
+              }
+            </div>
+          } @else {
+            <div class="qty-stepper">
+              <button
+                type="button"
+                class="step-btn"
+                [disabled]="fixedQty <= 1"
+                (click)="decrementFixedQty()"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="qty-value">{{ fixedQty }}</span>
+              <button type="button" class="step-btn" (click)="incrementFixedQty()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          }
 
           <div class="actions">
-            <button mat-button (click)="cancelWeight()">{{ 'common.cancel' | translate }}</button>
+            <button mat-button (click)="cancelCartItem()">{{ 'common.cancel' | translate }}</button>
             <button
               mat-flat-button
               color="primary"
-              [disabled]="!weightDisplayValue || weightDisplayValue <= 0"
-              (click)="confirmWeight()"
+              [disabled]="
+                item.priceType === 'perWeight'
+                  ? !weightDisplayValue || weightDisplayValue <= 0
+                  : fixedQty <= 0
+              "
+              (click)="confirmCartItem()"
             >
               {{ 'common.add' | translate }}
             </button>

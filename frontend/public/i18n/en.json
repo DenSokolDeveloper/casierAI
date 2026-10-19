@@ -42,6 +42,8 @@
     "recognizeError": "Recognition failed — pick the item manually",
     "confidenceSuffix": "match",
     "weightLabel": "Weight, kg",
+    "qtyLabel": "Quantity",
+    "addedToCart": "Added: {{name}} {{qty}}",
     "gram": "g",
     "milliliter": "mL",
     "installTitle": "Install the app",

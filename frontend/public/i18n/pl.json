@@ -42,6 +42,8 @@
     "recognizeError": "Błąd rozpoznawania — wybierz produkt ręcznie",
     "confidenceSuffix": "dopasowanie",
     "weightLabel": "Waga, kg",
+    "qtyLabel": "Ilość",
+    "addedToCart": "Dodano: {{name}} {{qty}}",
     "gram": "g",
     "milliliter": "ml",
     "installTitle": "Zainstaluj aplikację",

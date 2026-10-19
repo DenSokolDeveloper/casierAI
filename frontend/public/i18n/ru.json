@@ -42,6 +42,8 @@
     "recognizeError": "Ошибка распознавания — выберите товар вручную",
     "confidenceSuffix": "совпадение",
     "weightLabel": "Вес, кг",
+    "qtyLabel": "Количество",
+    "addedToCart": "Добавлено: {{name}} {{qty}}",
     "gram": "г",
     "milliliter": "мл",
     "installTitle": "Установите приложение",

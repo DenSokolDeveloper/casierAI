@@ -109,8 +109,11 @@ export class ProductsComponent implements OnInit {
 
   startEdit(product: Product): void {
     this.editingId.set(product._id);
-    const categoryId =
-      typeof product.categoryId === 'string' ? product.categoryId : product.categoryId._id;
+    const categoryId = !product.categoryId
+      ? ''
+      : typeof product.categoryId === 'string'
+        ? product.categoryId
+        : product.categoryId._id;
     this.form.setValue({
       name: product.name,
       categoryId,

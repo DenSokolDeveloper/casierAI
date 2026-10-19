@@ -304,7 +304,7 @@
   }
 }
 
-.weight-dialog {
+.qty-dialog {
   .weight-amount {
     display: flex;
     align-items: baseline;
@@ -361,6 +361,42 @@
           color: var(--mat-sys-on-primary);
         }
       }
+    }
+  }
+
+  .qty-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-high);
+
+    .step-btn {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+      cursor: pointer;
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+
+    .qty-value {
+      min-width: 40px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
     }
   }
 }

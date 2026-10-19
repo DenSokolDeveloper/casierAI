@@ -21,8 +21,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/services/auth.service';
 import { RecognitionService } from '../../core/services/recognition.service';
 import { TransactionsService } from '../../core/services/transactions.service';
@@ -46,6 +47,7 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
     MatInputModule,
     MatListModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     MatTooltipModule,
     TranslatePipe,
     LanguageSwitcherComponent,
@@ -59,6 +61,8 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly transactionsService = inject(TransactionsService);
   private readonly productsService = inject(ProductsService);
   protected readonly pwaInstall = inject(PwaInstallService);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   @ViewChild('video') private readonly videoElementRef?: ElementRef<HTMLVideoElement>;
   @ViewChild('canvas') private readonly canvasElementRef?: ElementRef<HTMLCanvasElement>;
@@ -70,9 +74,10 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly candidates = signal<RecognitionCandidate[]>([]);
   protected readonly recognizeMessage = signal<string | null>(null);
 
-  protected readonly pendingWeightItem = signal<RecognitionCandidate | Product | null>(null);
+  protected readonly pendingCartItem = signal<RecognitionCandidate | Product | null>(null);
   protected weightDisplayValue: number | null = null;
   protected readonly weightUnitFactor = signal(1);
+  protected fixedQty = 1;
 
   protected readonly showInstallPrompt = signal(false);
 
@@ -243,61 +248,69 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected selectCandidate(candidate: RecognitionCandidate): void {
-    if (candidate.priceType === 'perWeight') {
-      this.weightDisplayValue = null;
-      this.weightUnitFactor.set(1);
-      this.pendingWeightItem.set(candidate);
-      return;
-    }
-    this.addToCart({
-      productId: candidate.productId,
-      name: candidate.name,
-      priceType: candidate.priceType,
-      unitPrice: candidate.price,
-      unit: candidate.unit,
-      qty: 1,
-    });
-    this.candidates.set([]);
+    this.openCartDialog(candidate);
   }
 
   protected selectManualProduct(product: Product): void {
-    if (product.priceType === 'perWeight') {
-      this.weightDisplayValue = null;
-      this.weightUnitFactor.set(1);
-      this.pendingWeightItem.set(product);
-      return;
-    }
-    this.addToCart({
-      productId: product._id,
-      name: product.name,
-      priceType: product.priceType,
-      unitPrice: product.price,
-      unit: product.unit,
-      qty: 1,
-    });
+    this.openCartDialog(product);
   }
 
-  protected confirmWeight(): void {
-    const item = this.pendingWeightItem();
-    if (!item || !this.weightDisplayValue || this.weightDisplayValue <= 0) {
+  private openCartDialog(item: RecognitionCandidate | Product): void {
+    this.weightDisplayValue = null;
+    this.weightUnitFactor.set(1);
+    this.fixedQty = 1;
+    this.pendingCartItem.set(item);
+  }
+
+  protected confirmCartItem(): void {
+    const item = this.pendingCartItem();
+    if (!item) {
       return;
     }
-    const qty = round3(this.weightDisplayValue / this.weightUnitFactor());
+    const isWeight = item.priceType === 'perWeight';
+    let qty: number;
+    if (isWeight) {
+      if (!this.weightDisplayValue || this.weightDisplayValue <= 0) {
+        return;
+      }
+      qty = round3(this.weightDisplayValue / this.weightUnitFactor());
+    } else {
+      if (this.fixedQty <= 0) {
+        return;
+      }
+      qty = this.fixedQty;
+    }
+
     const isCandidate = 'confidence' in item;
     this.addToCart({
       productId: isCandidate ? item.productId : item._id,
       name: item.name,
-      priceType: 'perWeight',
+      priceType: item.priceType,
       unitPrice: item.price,
-      unit: isCandidate ? item.unit : item.unit,
+      unit: item.unit,
       qty,
     });
-    this.pendingWeightItem.set(null);
+    this.pendingCartItem.set(null);
     this.candidates.set([]);
+    this.showAddedSnackbar(item.name, qty, item.unit, isWeight);
   }
 
-  protected cancelWeight(): void {
-    this.pendingWeightItem.set(null);
+  protected cancelCartItem(): void {
+    this.pendingCartItem.set(null);
+  }
+
+  protected incrementFixedQty(): void {
+    this.fixedQty = Math.min(999, this.fixedQty + 1);
+  }
+
+  protected decrementFixedQty(): void {
+    this.fixedQty = Math.max(1, this.fixedQty - 1);
+  }
+
+  private showAddedSnackbar(name: string, qty: number, unit: string, isWeight: boolean): void {
+    const qtyText = isWeight ? `${qty} ${unit}` : `×${qty}`;
+    const message = this.translate.instant('pos.addedToCart', { name, qty: qtyText });
+    this.snackBar.open(message, undefined, { duration: 2000 });
   }
 
   protected hasSubUnit(unit: string): boolean {

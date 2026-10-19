@@ -42,6 +42,12 @@
     "recognizeError": "Recognition failed — pick the item manually",
     "confidenceSuffix": "match",
     "weightLabel": "Weight, kg",
+    "gram": "g",
+    "milliliter": "mL",
+    "installTitle": "Install the app",
+    "installSubtitle": "Work faster — add KassaLens to your home screen instead of using the browser",
+    "installLater": "Not now",
+    "installNow": "Install",
     "hideManualSearch": "Hide manual search",
     "showManualSearch": "Add item manually",
     "searchPlaceholder": "Search by name",
@@ -61,7 +67,8 @@
       "products": "Products",
       "categories": "Categories",
       "users": "Staff",
-      "import": "Import"
+      "import": "Import",
+      "history": "History"
     },
     "dashboard": {
       "loadError": "Could not load the dashboard",
@@ -150,6 +157,18 @@
       "colStock": "Stock",
       "newCategory": "new",
       "commitButton": "Import ({{count}})"
+    },
+    "history": {
+      "loadError": "Could not load the sales history",
+      "empty": "No sales yet.",
+      "colDate": "Date",
+      "colCashier": "Cashier",
+      "colItems": "Items",
+      "colTotal": "Total",
+      "colProduct": "Product",
+      "colQty": "Qty",
+      "colUnitPrice": "Price",
+      "colLineTotal": "Total"
     }
   }
 }

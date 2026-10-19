@@ -29,3 +29,26 @@ export interface TransactionResponse {
   total: number;
   createdAt: string;
 }
+
+export interface TransactionLineItem {
+  productId: string;
+  name: string;
+  unit: string;
+  qty: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export interface TransactionCashier {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export interface Transaction {
+  _id: string;
+  items: TransactionLineItem[];
+  total: number;
+  cashierId: TransactionCashier | string;
+  createdAt: string;
+}

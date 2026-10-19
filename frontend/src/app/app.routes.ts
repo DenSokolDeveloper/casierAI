@@ -51,6 +51,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/admin/import/import.component').then((m) => m.ImportComponent),
       },
+      {
+        path: 'history',
+        loadComponent: () =>
+          import('./pages/admin/history/history.component').then((m) => m.HistoryComponent),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

@@ -42,6 +42,12 @@
     "recognizeError": "Помилка розпізнавання — оберіть товар вручну",
     "confidenceSuffix": "збіг",
     "weightLabel": "Вага, кг",
+    "gram": "г",
+    "milliliter": "мл",
+    "installTitle": "Встановіть застосунок",
+    "installSubtitle": "Працюйте швидше — додайте KassaLens на головний екран замість браузера",
+    "installLater": "Не зараз",
+    "installNow": "Встановити",
     "hideManualSearch": "Сховати ручний пошук",
     "showManualSearch": "Додати товар вручну",
     "searchPlaceholder": "Пошук за назвою",
@@ -61,7 +67,8 @@
       "products": "Товари",
       "categories": "Категорії",
       "users": "Співробітники",
-      "import": "Імпорт"
+      "import": "Імпорт",
+      "history": "Історія"
     },
     "dashboard": {
       "loadError": "Не вдалося завантажити дешборд",
@@ -150,6 +157,18 @@
       "colStock": "Залишок",
       "newCategory": "нова",
       "commitButton": "Імпортувати ({{count}})"
+    },
+    "history": {
+      "loadError": "Не вдалося завантажити історію продажів",
+      "empty": "Продажів поки немає.",
+      "colDate": "Дата",
+      "colCashier": "Касир",
+      "colItems": "Товарів",
+      "colTotal": "Сума",
+      "colProduct": "Товар",
+      "colQty": "К-ть",
+      "colUnitPrice": "Ціна",
+      "colLineTotal": "Сума"
     }
   }
 }

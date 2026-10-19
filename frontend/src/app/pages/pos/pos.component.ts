@@ -6,6 +6,7 @@ import {
   OnInit,
   ViewChild,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -26,6 +27,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { RecognitionService } from '../../core/services/recognition.service';
 import { TransactionsService } from '../../core/services/transactions.service';
 import { ProductsService } from '../../core/services/products.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { CartItem, RecognitionCandidate } from '../../core/models/pos.models';
 import { Product } from '../../core/models/catalog.models';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
@@ -56,6 +58,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly recognitionService = inject(RecognitionService);
   private readonly transactionsService = inject(TransactionsService);
   private readonly productsService = inject(ProductsService);
+  protected readonly pwaInstall = inject(PwaInstallService);
 
   @ViewChild('video') private readonly videoElementRef?: ElementRef<HTMLVideoElement>;
   @ViewChild('canvas') private readonly canvasElementRef?: ElementRef<HTMLCanvasElement>;
@@ -68,7 +71,36 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly recognizeMessage = signal<string | null>(null);
 
   protected readonly pendingWeightItem = signal<RecognitionCandidate | Product | null>(null);
-  protected weightInputKg: number | null = null;
+  protected weightDisplayValue: number | null = null;
+  protected readonly weightUnitFactor = signal(1);
+
+  protected readonly showInstallPrompt = signal(false);
+
+  private static readonly KILOGRAM_UNIT_NAMES = [
+    'kg',
+    'kgs',
+    'kilogram',
+    'kilograms',
+    'кг',
+    'кг.',
+    'килограмм',
+    'килограммы',
+    'kilogram',
+    'kilogramy',
+  ];
+
+  private static readonly LITER_UNIT_NAMES = [
+    'l',
+    'liter',
+    'liters',
+    'litre',
+    'litres',
+    'л',
+    'л.',
+    'литр',
+    'литры',
+    'litr',
+  ];
 
   protected readonly manualSearchOpen = signal(false);
   protected manualSearchTerm = '';
@@ -91,6 +123,18 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly checkoutError = signal<string | null>(null);
   protected readonly lastReceiptTotal = signal<number | null>(null);
 
+  constructor() {
+    effect(() => {
+      if (
+        this.pwaInstall.canInstall() &&
+        !this.pwaInstall.isStandalone() &&
+        !this.pwaInstall.isDismissed()
+      ) {
+        this.showInstallPrompt.set(true);
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.productsService.list().subscribe({
       next: (products) => this.allProducts.set(products),
@@ -98,6 +142,16 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
         // Manual fallback search just won't have data; recognition still works.
       },
     });
+  }
+
+  protected installApp(): void {
+    void this.pwaInstall.promptInstall();
+    this.showInstallPrompt.set(false);
+  }
+
+  protected dismissInstallPrompt(): void {
+    this.pwaInstall.dismiss();
+    this.showInstallPrompt.set(false);
   }
 
   ngAfterViewInit(): void {
@@ -190,7 +244,8 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected selectCandidate(candidate: RecognitionCandidate): void {
     if (candidate.priceType === 'perWeight') {
-      this.weightInputKg = null;
+      this.weightDisplayValue = null;
+      this.weightUnitFactor.set(1);
       this.pendingWeightItem.set(candidate);
       return;
     }
@@ -207,7 +262,8 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected selectManualProduct(product: Product): void {
     if (product.priceType === 'perWeight') {
-      this.weightInputKg = null;
+      this.weightDisplayValue = null;
+      this.weightUnitFactor.set(1);
       this.pendingWeightItem.set(product);
       return;
     }
@@ -223,9 +279,10 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected confirmWeight(): void {
     const item = this.pendingWeightItem();
-    if (!item || !this.weightInputKg || this.weightInputKg <= 0) {
+    if (!item || !this.weightDisplayValue || this.weightDisplayValue <= 0) {
       return;
     }
+    const qty = round3(this.weightDisplayValue / this.weightUnitFactor());
     const isCandidate = 'confidence' in item;
     this.addToCart({
       productId: isCandidate ? item.productId : item._id,
@@ -233,7 +290,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
       priceType: 'perWeight',
       unitPrice: item.price,
       unit: isCandidate ? item.unit : item.unit,
-      qty: this.weightInputKg,
+      qty,
     });
     this.pendingWeightItem.set(null);
     this.candidates.set([]);
@@ -241,6 +298,34 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected cancelWeight(): void {
     this.pendingWeightItem.set(null);
+  }
+
+  protected hasSubUnit(unit: string): boolean {
+    return this.isKilogramUnit(unit) || this.isLiterUnit(unit);
+  }
+
+  protected subUnitLabelKey(unit: string): string {
+    return this.isKilogramUnit(unit) ? 'pos.gram' : 'pos.milliliter';
+  }
+
+  protected setWeightUnitFactor(factor: number): void {
+    const current = this.weightUnitFactor();
+    if (current === factor) {
+      return;
+    }
+    if (this.weightDisplayValue !== null) {
+      const baseQty = this.weightDisplayValue / current;
+      this.weightDisplayValue = round3(baseQty * factor);
+    }
+    this.weightUnitFactor.set(factor);
+  }
+
+  private isKilogramUnit(unit: string): boolean {
+    return PosComponent.KILOGRAM_UNIT_NAMES.includes(unit.trim().toLowerCase());
+  }
+
+  private isLiterUnit(unit: string): boolean {
+    return PosComponent.LITER_UNIT_NAMES.includes(unit.trim().toLowerCase());
   }
 
   private addToCart(entry: {
@@ -328,4 +413,8 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function round3(value: number): number {
+  return Math.round(value * 1000) / 1000;
 }

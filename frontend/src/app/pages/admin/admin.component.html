@@ -31,6 +31,10 @@
       <mat-icon>upload_file</mat-icon>
       {{ 'admin.nav.import' | translate }}
     </a>
+    <a mat-tab-link routerLink="history" routerLinkActive #historyLink="routerLinkActive" [active]="historyLink.isActive">
+      <mat-icon>receipt_long</mat-icon>
+      {{ 'admin.nav.history' | translate }}
+    </a>
   </nav>
   <mat-tab-nav-panel #tabPanel>
     <div class="admin-content">

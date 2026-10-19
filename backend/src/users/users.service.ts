@@ -40,7 +40,7 @@ export class UsersService implements OnModuleInit {
     const password = configuredPassword ? configuredPassword : randomBytes(9).toString('base64url');
 
     await this.createShopOwner({
-      shopName: 'CasierAI',
+      shopName: 'KassaLens',
       email,
       password,
       name: 'Owner',

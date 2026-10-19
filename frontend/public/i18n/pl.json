@@ -42,6 +42,12 @@
     "recognizeError": "Błąd rozpoznawania — wybierz produkt ręcznie",
     "confidenceSuffix": "dopasowanie",
     "weightLabel": "Waga, kg",
+    "gram": "g",
+    "milliliter": "ml",
+    "installTitle": "Zainstaluj aplikację",
+    "installSubtitle": "Pracuj szybciej — dodaj KassaLens do ekranu głównego zamiast przeglądarki",
+    "installLater": "Nie teraz",
+    "installNow": "Zainstaluj",
     "hideManualSearch": "Ukryj ręczne wyszukiwanie",
     "showManualSearch": "Dodaj produkt ręcznie",
     "searchPlaceholder": "Szukaj po nazwie",
@@ -61,7 +67,8 @@
       "products": "Produkty",
       "categories": "Kategorie",
       "users": "Pracownicy",
-      "import": "Import"
+      "import": "Import",
+      "history": "Historia"
     },
     "dashboard": {
       "loadError": "Nie udało się załadować pulpitu",
@@ -150,6 +157,18 @@
       "colStock": "Stan",
       "newCategory": "nowa",
       "commitButton": "Importuj ({{count}})"
+    },
+    "history": {
+      "loadError": "Nie udało się załadować historii sprzedaży",
+      "empty": "Brak sprzedaży.",
+      "colDate": "Data",
+      "colCashier": "Kasjer",
+      "colItems": "Produktów",
+      "colTotal": "Suma",
+      "colProduct": "Produkt",
+      "colQty": "Ilość",
+      "colUnitPrice": "Cena",
+      "colLineTotal": "Suma"
     }
   }
 }

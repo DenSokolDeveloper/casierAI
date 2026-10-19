@@ -1,7 +1,7 @@
 <div class="pos-page">
   <mat-toolbar color="primary" class="pos-toolbar">
     <mat-icon>storefront</mat-icon>
-    <span class="brand">CasierAI</span>
+    <span class="brand">KassaLens</span>
     <span class="spacer"></span>
     @if (authService.currentUser(); as user) {
       <span class="user-chip">
@@ -128,11 +128,30 @@
               min="0.001"
               step="0.001"
               placeholder="0"
-              [(ngModel)]="weightInputKg"
+              [(ngModel)]="weightDisplayValue"
               autofocus
               (focus)="$any($event.target).select()"
             />
-            <span class="unit">кг</span>
+            @if (hasSubUnit(item.unit)) {
+              <div class="unit-switch">
+                <button
+                  type="button"
+                  [class.active]="weightUnitFactor() === 1"
+                  (click)="setWeightUnitFactor(1)"
+                >
+                  {{ item.unit }}
+                </button>
+                <button
+                  type="button"
+                  [class.active]="weightUnitFactor() === 1000"
+                  (click)="setWeightUnitFactor(1000)"
+                >
+                  {{ subUnitLabelKey(item.unit) | translate }}
+                </button>
+              </div>
+            } @else {
+              <span class="unit">{{ item.unit }}</span>
+            }
           </div>
 
           <div class="actions">
@@ -140,10 +159,33 @@
             <button
               mat-flat-button
               color="primary"
-              [disabled]="!weightInputKg || weightInputKg <= 0"
+              [disabled]="!weightDisplayValue || weightDisplayValue <= 0"
               (click)="confirmWeight()"
             >
               {{ 'common.add' | translate }}
+            </button>
+          </div>
+        </mat-card>
+      </div>
+    }
+
+    @if (showInstallPrompt()) {
+      <div class="dialog-backdrop" (click)="dismissInstallPrompt()">
+        <mat-card class="dialog-card install-dialog" (click)="$event.stopPropagation()">
+          <div class="dialog-header">
+            <mat-icon class="dialog-icon">install_mobile</mat-icon>
+            <div>
+              <h3>{{ 'pos.installTitle' | translate }}</h3>
+              <p class="dialog-subtitle">{{ 'pos.installSubtitle' | translate }}</p>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button mat-button (click)="dismissInstallPrompt()">
+              {{ 'pos.installLater' | translate }}
+            </button>
+            <button mat-flat-button color="primary" (click)="installApp()">
+              {{ 'pos.installNow' | translate }}
             </button>
           </div>
         </mat-card>

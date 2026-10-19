@@ -1,0 +1,61 @@
+<div class="history-page">
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() | translate }}</p>
+  }
+
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner diameter="36" />
+    </div>
+  } @else if (transactions().length === 0) {
+    <p class="empty">{{ 'admin.history.empty' | translate }}</p>
+  } @else {
+    <div class="history-header">
+      <span class="col-date">{{ 'admin.history.colDate' | translate }}</span>
+      <span class="col-cashier">{{ 'admin.history.colCashier' | translate }}</span>
+      <span class="col-count">{{ 'admin.history.colItems' | translate }}</span>
+      <span class="col-total">{{ 'admin.history.colTotal' | translate }}</span>
+    </div>
+
+    <div class="transaction-list">
+      @for (tx of transactions(); track tx._id) {
+        <div class="transaction-row" [class.expanded]="expandedId() === tx._id">
+          <button type="button" class="row-summary" (click)="toggle(tx._id)">
+            <mat-icon class="chevron">
+              {{ expandedId() === tx._id ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+            <span class="col-date">{{ tx.createdAt | date: 'dd.MM.yyyy HH:mm' }}</span>
+            <span class="col-cashier">{{ cashierName(tx) }}</span>
+            <span class="col-count">{{ tx.items.length }}</span>
+            <span class="col-total">{{ tx.total | number: '1.0-2' }}</span>
+          </button>
+
+          @if (expandedId() === tx._id) {
+            <div class="row-detail">
+              <table class="detail-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'admin.history.colProduct' | translate }}</th>
+                    <th>{{ 'admin.history.colQty' | translate }}</th>
+                    <th>{{ 'admin.history.colUnitPrice' | translate }}</th>
+                    <th>{{ 'admin.history.colLineTotal' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of tx.items; track item.productId) {
+                    <tr>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.qty }} {{ item.unit }}</td>
+                      <td>{{ item.unitPrice | number: '1.0-2' }}</td>
+                      <td>{{ item.lineTotal | number: '1.0-2' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

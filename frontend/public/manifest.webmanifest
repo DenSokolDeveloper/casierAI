@@ -1,6 +1,6 @@
 {
-  "name": "frontend",
-  "short_name": "frontend",
+  "name": "KassaLens",
+  "short_name": "KassaLens",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

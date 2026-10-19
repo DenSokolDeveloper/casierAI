@@ -42,6 +42,12 @@
     "recognizeError": "Ошибка распознавания — выберите товар вручную",
     "confidenceSuffix": "совпадение",
     "weightLabel": "Вес, кг",
+    "gram": "г",
+    "milliliter": "мл",
+    "installTitle": "Установите приложение",
+    "installSubtitle": "Работайте быстрее — добавьте KassaLens на экран телефона вместо браузера",
+    "installLater": "Не сейчас",
+    "installNow": "Установить",
     "hideManualSearch": "Скрыть ручной поиск",
     "showManualSearch": "Добавить товар вручную",
     "searchPlaceholder": "Поиск по названию",
@@ -61,7 +67,8 @@
       "products": "Товары",
       "categories": "Категории",
       "users": "Сотрудники",
-      "import": "Импорт"
+      "import": "Импорт",
+      "history": "История"
     },
     "dashboard": {
       "loadError": "Не удалось загрузить дешборд",
@@ -150,6 +157,18 @@
       "colStock": "Остаток",
       "newCategory": "новая",
       "commitButton": "Импортировать ({{count}})"
+    },
+    "history": {
+      "loadError": "Не удалось загрузить историю продаж",
+      "empty": "Продаж пока нет.",
+      "colDate": "Дата",
+      "colCashier": "Кассир",
+      "colItems": "Товаров",
+      "colTotal": "Сумма",
+      "colProduct": "Товар",
+      "colQty": "Кол-во",
+      "colUnitPrice": "Цена",
+      "colLineTotal": "Сумма"
     }
   }
 }

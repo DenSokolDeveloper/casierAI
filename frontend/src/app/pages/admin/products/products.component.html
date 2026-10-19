@@ -1,10 +1,21 @@
 <div class="products-page">
   <div class="toolbar">
     <h2>{{ 'admin.products.title' | translate }}</h2>
-    <button mat-flat-button color="primary" type="button" (click)="startCreate()">
-      <mat-icon>add</mat-icon>
-      {{ 'admin.products.newButton' | translate }}
-    </button>
+    <div class="toolbar-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="products().length === 0"
+        (click)="exportCsv()"
+      >
+        <mat-icon>download</mat-icon>
+        {{ 'admin.products.exportButton' | translate }}
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="startCreate()">
+        <mat-icon>add</mat-icon>
+        {{ 'admin.products.newButton' | translate }}
+      </button>
+    </div>
   </div>
 
   @if (errorMessage()) {

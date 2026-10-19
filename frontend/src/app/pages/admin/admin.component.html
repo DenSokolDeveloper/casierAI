@@ -1,16 +1,17 @@
 <div class="admin-page">
-  <mat-toolbar color="primary">
-    <mat-icon>admin_panel_settings</mat-icon>
-    <span class="title">{{ 'common.admin' | translate }}</span>
-    <span class="spacer"></span>
-    <app-language-switcher />
-    <a mat-button routerLink="/">
-      <mat-icon>arrow_back</mat-icon>
-      {{ 'common.backToHome' | translate }}
-    </a>
-  </mat-toolbar>
+  <div class="admin-header">
+    <mat-toolbar color="primary">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span class="title">{{ 'common.admin' | translate }}</span>
+      <span class="spacer"></span>
+      <app-language-switcher />
+      <a mat-button routerLink="/">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'common.backToHome' | translate }}
+      </a>
+    </mat-toolbar>
 
-  <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="admin-tabs">
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="admin-tabs">
     <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">
       <mat-icon>dashboard</mat-icon>
       {{ 'admin.nav.dashboard' | translate }}
@@ -35,7 +36,8 @@
       <mat-icon>receipt_long</mat-icon>
       {{ 'admin.nav.history' | translate }}
     </a>
-  </nav>
+    </nav>
+  </div>
   <mat-tab-nav-panel #tabPanel>
     <div class="admin-content">
       <router-outlet />

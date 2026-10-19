@@ -64,3 +64,20 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --mdc-protected-button-container-shape: 12px;
   --mdc-outlined-button-container-shape: 12px;
 }
+
+// Default Material table cells are quite wide (16px padding per side);
+// tighten them so admin tables fit more columns before needing to scroll.
+.mat-mdc-table .mat-mdc-header-cell,
+.mat-mdc-table .mat-mdc-cell {
+  padding: 0 8px;
+}
+
+// The actions column (edit/delete) stays reachable without having to
+// scroll the table sideways, no matter how many other columns there are.
+.mat-mdc-table .mat-column-actions {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--mat-sys-surface);
+  box-shadow: -6px 0 6px -6px rgba(0, 0, 0, 0.2);
+}

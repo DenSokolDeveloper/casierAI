@@ -92,6 +92,7 @@
     "products": {
       "title": "Produkty",
       "newButton": "Nowy produkt",
+      "exportButton": "Pobierz CSV",
       "loadCategoriesError": "Nie udało się załadować kategorii",
       "loadError": "Nie udało się załadować produktów",
       "saveError": "Nie udało się zapisać produktu",
@@ -159,6 +160,8 @@
       "commitButton": "Importuj ({{count}})"
     },
     "history": {
+      "title": "Historia sprzedaży",
+      "exportButton": "Pobierz CSV",
       "loadError": "Nie udało się załadować historii sprzedaży",
       "empty": "Brak sprzedaży.",
       "colDate": "Data",

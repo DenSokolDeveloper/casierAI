@@ -1,4 +1,17 @@
 <div class="history-page">
+  <div class="toolbar">
+    <h2>{{ 'admin.history.title' | translate }}</h2>
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="transactions().length === 0"
+      (click)="exportCsv()"
+    >
+      <mat-icon>download</mat-icon>
+      {{ 'admin.history.exportButton' | translate }}
+    </button>
+  </div>
+
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() | translate }}</p>
   }

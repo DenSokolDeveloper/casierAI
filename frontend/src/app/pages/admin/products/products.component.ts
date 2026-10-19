@@ -14,6 +14,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductsService } from '../../../core/services/products.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category, PriceType, Product } from '../../../core/models/catalog.models';
+import { downloadCsv } from '../../../core/utils/csv.util';
 
 @Component({
   selector: 'app-admin-products',
@@ -184,6 +185,28 @@ export class ProductsComponent implements OnInit {
         this.load();
       },
     });
+  }
+
+  exportCsv(): void {
+    const headers = [
+      'Name',
+      'Category',
+      'Price type',
+      'Price',
+      'Unit',
+      'Stock',
+      'Active',
+    ];
+    const rows = this.products().map((product) => [
+      product.name,
+      this.categoryName(product),
+      product.priceType,
+      product.price,
+      product.unit,
+      product.stockQty,
+      product.active ? 'yes' : 'no',
+    ]);
+    downloadCsv('products.csv', headers, rows);
   }
 
   remove(product: Product): void {

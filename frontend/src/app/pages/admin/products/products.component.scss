@@ -7,10 +7,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
 
     h2 {
       margin: 0;
       font-size: 1.1rem;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 8px;
     }
   }
 
@@ -130,9 +137,36 @@
     }
 
     .row-actions {
-      display: flex;
-      gap: 0;
+      // Stay a normal table-cell (not flex/block) so this cell's height
+      // still matches the rest of the row and the bottom border lines up.
       white-space: nowrap;
+    }
+
+    // Least essential columns on a narrow screen - drop them instead of
+    // forcing a horizontal scroll just to see name/price/stock.
+    @media (max-width: 480px) {
+      .mat-column-photo,
+      .mat-column-active {
+        display: none;
+      }
+
+      th.mat-mdc-header-cell,
+      td.mat-mdc-cell {
+        padding: 0 6px;
+      }
+
+      .mat-column-actions .mat-mdc-icon-button {
+        --mdc-icon-button-state-layer-size: 32px;
+        width: 32px;
+        height: 32px;
+        padding: 4px;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
   }
 }

@@ -111,7 +111,8 @@
     }
 
     .row-actions {
-      display: flex;
+      // Stay a normal table-cell (not flex/block) so this cell's height
+      // still matches the rest of the row and the bottom border lines up.
       white-space: nowrap;
     }
   }

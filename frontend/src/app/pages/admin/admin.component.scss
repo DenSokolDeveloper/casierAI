@@ -2,10 +2,15 @@
   min-height: 100vh;
   background: var(--mat-sys-surface-container-low);
 
-  mat-toolbar {
+  // Toolbar + tabs stick together as one block, so there's never a gap
+  // between them for scrolled content to peek through.
+  .admin-header {
     position: sticky;
     top: 0;
     z-index: 10;
+  }
+
+  mat-toolbar {
     gap: 8px;
 
     .title {
@@ -19,9 +24,6 @@
   }
 
   .admin-tabs {
-    position: sticky;
-    top: 64px;
-    z-index: 9;
     background: var(--mat-sys-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
 

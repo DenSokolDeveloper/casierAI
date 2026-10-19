@@ -92,6 +92,7 @@
     "products": {
       "title": "Товари",
       "newButton": "Новий товар",
+      "exportButton": "Завантажити CSV",
       "loadCategoriesError": "Не вдалося завантажити категорії",
       "loadError": "Не вдалося завантажити товари",
       "saveError": "Не вдалося зберегти товар",
@@ -159,6 +160,8 @@
       "commitButton": "Імпортувати ({{count}})"
     },
     "history": {
+      "title": "Історія продажів",
+      "exportButton": "Завантажити CSV",
       "loadError": "Не вдалося завантажити історію продажів",
       "empty": "Продажів поки немає.",
       "colDate": "Дата",

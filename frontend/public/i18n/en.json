@@ -92,6 +92,7 @@
     "products": {
       "title": "Products",
       "newButton": "New product",
+      "exportButton": "Download CSV",
       "loadCategoriesError": "Could not load categories",
       "loadError": "Could not load products",
       "saveError": "Could not save the product",
@@ -159,6 +160,8 @@
       "commitButton": "Import ({{count}})"
     },
     "history": {
+      "title": "Sales history",
+      "exportButton": "Download CSV",
       "loadError": "Could not load the sales history",
       "empty": "No sales yet.",
       "colDate": "Date",

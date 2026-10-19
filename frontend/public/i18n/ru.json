@@ -92,6 +92,7 @@
     "products": {
       "title": "Товары",
       "newButton": "Новый товар",
+      "exportButton": "Скачать CSV",
       "loadCategoriesError": "Не удалось загрузить категории",
       "loadError": "Не удалось загрузить товары",
       "saveError": "Не удалось сохранить товар",
@@ -159,6 +160,8 @@
       "commitButton": "Импортировать ({{count}})"
     },
     "history": {
+      "title": "История продаж",
+      "exportButton": "Скачать CSV",
       "loadError": "Не удалось загрузить историю продаж",
       "empty": "Продаж пока нет.",
       "colDate": "Дата",

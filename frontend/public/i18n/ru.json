@@ -53,6 +53,8 @@
     "hideManualSearch": "Скрыть ручной поиск",
     "showManualSearch": "Добавить товар вручную",
     "searchPlaceholder": "Поиск по названию",
+    "backToCategories": "Назад к категориям",
+    "noResults": "Ничего не найдено",
     "cartTitle": "Чек",
     "cartEmpty": "Отсканируйте товар, чтобы добавить его в чек.",
     "checkoutError": "Не удалось провести продажу. Попробуйте снова.",

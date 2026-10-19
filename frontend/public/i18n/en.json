@@ -53,6 +53,8 @@
     "hideManualSearch": "Hide manual search",
     "showManualSearch": "Add item manually",
     "searchPlaceholder": "Search by name",
+    "backToCategories": "Back to categories",
+    "noResults": "Nothing found",
     "cartTitle": "Receipt",
     "cartEmpty": "Scan an item to add it to the receipt.",
     "checkoutError": "Could not complete the sale. Try again.",

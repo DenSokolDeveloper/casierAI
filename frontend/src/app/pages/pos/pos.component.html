@@ -85,24 +85,59 @@
           <div class="manual-search">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'pos.searchPlaceholder' | translate }}</mat-label>
-              <input matInput type="text" [(ngModel)]="manualSearchTerm" />
+              <input
+                matInput
+                type="text"
+                [ngModel]="manualSearchTerm()"
+                (ngModelChange)="manualSearchTerm.set($event)"
+              />
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
 
-            @if (manualResults().length > 0) {
-              <div class="product-tiles">
-                @for (product of manualResults(); track product._id) {
-                  <button type="button" class="product-tile" (click)="selectManualProduct(product)">
-                    <span class="tile-icon"><mat-icon>inventory_2</mat-icon></span>
-                    <span class="tile-body">
-                      <span class="tile-name">{{ product.name }}</span>
-                      <span class="tile-meta">
-                        {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
+            @if (!manualSearchTerm().trim() && !selectedCategoryId()) {
+              @if (manualCategories().length > 0) {
+                <div class="category-tiles">
+                  @for (category of manualCategories(); track category._id) {
+                    <button
+                      type="button"
+                      class="category-tile"
+                      (click)="selectManualCategory(category._id)"
+                    >
+                      @if (category.photoUrl) {
+                        <img [src]="category.photoUrl" class="tile-photo" alt="" />
+                      } @else {
+                        <span class="tile-icon"><mat-icon>category</mat-icon></span>
+                      }
+                      <span class="tile-name">{{ category.name }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            } @else {
+              @if (!manualSearchTerm().trim() && selectedCategoryId()) {
+                <button type="button" class="back-link" (click)="backToCategories()">
+                  <mat-icon>arrow_back</mat-icon>
+                  {{ 'pos.backToCategories' | translate }}
+                </button>
+              }
+
+              @if (manualResults().length > 0) {
+                <div class="product-tiles">
+                  @for (product of manualResults(); track product._id) {
+                    <button type="button" class="product-tile" (click)="selectManualProduct(product)">
+                      <span class="tile-icon"><mat-icon>inventory_2</mat-icon></span>
+                      <span class="tile-body">
+                        <span class="tile-name">{{ product.name }}</span>
+                        <span class="tile-meta">
+                          {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
+                        </span>
                       </span>
-                    </span>
-                  </button>
-                }
-              </div>
+                    </button>
+                  }
+                </div>
+              } @else {
+                <p class="hint">{{ 'pos.noResults' | translate }}</p>
+              }
             }
           </div>
         }

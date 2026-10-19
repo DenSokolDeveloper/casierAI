@@ -53,6 +53,8 @@
     "hideManualSearch": "Ukryj ręczne wyszukiwanie",
     "showManualSearch": "Dodaj produkt ręcznie",
     "searchPlaceholder": "Szukaj po nazwie",
+    "backToCategories": "Powrót do kategorii",
+    "noResults": "Nic nie znaleziono",
     "cartTitle": "Paragon",
     "cartEmpty": "Zeskanuj produkt, aby dodać go do paragonu.",
     "checkoutError": "Nie udało się sfinalizować sprzedaży. Spróbuj ponownie.",

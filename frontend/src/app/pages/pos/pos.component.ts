@@ -28,9 +28,10 @@ import { AuthService } from '../../core/services/auth.service';
 import { RecognitionService } from '../../core/services/recognition.service';
 import { TransactionsService } from '../../core/services/transactions.service';
 import { ProductsService } from '../../core/services/products.service';
+import { CategoriesService } from '../../core/services/categories.service';
 import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { CartItem, RecognitionCandidate } from '../../core/models/pos.models';
-import { Product } from '../../core/models/catalog.models';
+import { Category, Product } from '../../core/models/catalog.models';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
@@ -60,6 +61,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly recognitionService = inject(RecognitionService);
   private readonly transactionsService = inject(TransactionsService);
   private readonly productsService = inject(ProductsService);
+  private readonly categoriesService = inject(CategoriesService);
   protected readonly pwaInstall = inject(PwaInstallService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -108,16 +110,44 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   protected readonly manualSearchOpen = signal(false);
-  protected manualSearchTerm = '';
+  protected readonly manualSearchTerm = signal('');
+  protected readonly selectedCategoryId = signal<string | null>(null);
   protected readonly allProducts = signal<Product[]>([]);
-  protected readonly manualResults = computed(() => {
-    const term = this.manualSearchTerm.trim().toLowerCase();
-    const products = this.allProducts().filter((product) => product.active);
-    if (!term) {
-      return products.slice(0, 20);
-    }
-    return products.filter((product) => product.name.toLowerCase().includes(term)).slice(0, 20);
+  protected readonly allCategories = signal<Category[]>([]);
+
+  protected readonly manualCategories = computed(() => {
+    const idsWithProducts = new Set(
+      this.allProducts()
+        .filter((product) => product.active)
+        .map((product) => this.categoryIdOf(product))
+        .filter((id): id is string => !!id),
+    );
+    return this.allCategories()
+      .filter((category) => idsWithProducts.has(category._id))
+      .sort((a, b) => a.name.localeCompare(b.name));
   });
+
+  protected readonly manualResults = computed(() => {
+    const term = this.manualSearchTerm().trim().toLowerCase();
+    const products = this.allProducts().filter((product) => product.active);
+    if (term) {
+      // Typing always searches every product, regardless of category.
+      return products.filter((product) => product.name.toLowerCase().includes(term)).slice(0, 30);
+    }
+    const categoryId = this.selectedCategoryId();
+    if (!categoryId) {
+      return [];
+    }
+    return products.filter((product) => this.categoryIdOf(product) === categoryId);
+  });
+
+  private categoryIdOf(product: Product): string | null {
+    const category = product.categoryId;
+    if (!category) {
+      return null;
+    }
+    return typeof category === 'string' ? category : category._id;
+  }
 
   protected readonly cart = signal<CartItem[]>([]);
   protected readonly total = computed(() =>
@@ -145,6 +175,12 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (products) => this.allProducts.set(products),
       error: () => {
         // Manual fallback search just won't have data; recognition still works.
+      },
+    });
+    this.categoriesService.list().subscribe({
+      next: (categories) => this.allCategories.set(categories),
+      error: () => {
+        // Category browsing just won't be available; search by name still works.
       },
     });
   }
@@ -394,7 +430,20 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected toggleManualSearch(): void {
-    this.manualSearchOpen.update((open) => !open);
+    const next = !this.manualSearchOpen();
+    this.manualSearchOpen.set(next);
+    if (!next) {
+      this.manualSearchTerm.set('');
+      this.selectedCategoryId.set(null);
+    }
+  }
+
+  protected selectManualCategory(categoryId: string): void {
+    this.selectedCategoryId.set(categoryId);
+  }
+
+  protected backToCategories(): void {
+    this.selectedCategoryId.set(null);
   }
 
   protected checkout(): void {

@@ -53,6 +53,8 @@
     "hideManualSearch": "Сховати ручний пошук",
     "showManualSearch": "Додати товар вручну",
     "searchPlaceholder": "Пошук за назвою",
+    "backToCategories": "Назад до категорій",
+    "noResults": "Нічого не знайдено",
     "cartTitle": "Чек",
     "cartEmpty": "Відскануйте товар, щоб додати його до чека.",
     "checkoutError": "Не вдалося провести продаж. Спробуйте ще раз.",

@@ -95,8 +95,14 @@
             </mat-form-field>
 
             @if (!manualSearchTerm().trim() && !selectedCategoryId()) {
-              @if (manualCategories().length > 0) {
+              @if (manualCategories().length > 0 || hasAnyProducts()) {
                 <div class="category-tiles">
+                  @if (hasAnyProducts()) {
+                    <button type="button" class="category-tile" (click)="selectAllProducts()">
+                      <span class="tile-icon"><mat-icon>apps</mat-icon></span>
+                      <span class="tile-name">{{ 'pos.allProducts' | translate }}</span>
+                    </button>
+                  }
                   @for (category of manualCategories(); track category._id) {
                     <button
                       type="button"
@@ -236,17 +242,21 @@
             <mat-icon class="dialog-icon">install_mobile</mat-icon>
             <div>
               <h3>{{ 'pos.installTitle' | translate }}</h3>
-              <p class="dialog-subtitle">{{ 'pos.installSubtitle' | translate }}</p>
+              <p class="dialog-subtitle">
+                {{ (pwaInstall.isIos() ? 'pos.installIosSubtitle' : 'pos.installSubtitle') | translate }}
+              </p>
             </div>
           </div>
 
           <div class="actions">
             <button mat-button (click)="dismissInstallPrompt()">
-              {{ 'pos.installLater' | translate }}
+              {{ (pwaInstall.isIos() ? 'pos.installGotIt' : 'pos.installLater') | translate }}
             </button>
-            <button mat-flat-button color="primary" (click)="installApp()">
-              {{ 'pos.installNow' | translate }}
-            </button>
+            @if (!pwaInstall.isIos()) {
+              <button mat-flat-button color="primary" (click)="installApp()">
+                {{ 'pos.installNow' | translate }}
+              </button>
+            }
           </div>
         </mat-card>
       </div>

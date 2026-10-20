@@ -28,6 +28,17 @@ export class PwaInstallService {
     }
   }
 
+  isIos(): boolean {
+    try {
+      const ua = window.navigator.userAgent;
+      const isIosDevice = /iphone|ipad|ipod/i.test(ua);
+      const isIpadOs = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+      return isIosDevice || isIpadOs;
+    } catch {
+      return false;
+    }
+  }
+
   isStandalone(): boolean {
     try {
       const navigatorStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone;

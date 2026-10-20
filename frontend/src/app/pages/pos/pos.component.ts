@@ -109,6 +109,8 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
     'litr',
   ];
 
+  private static readonly ALL_PRODUCTS_ID = '__all__';
+
   protected readonly manualSearchOpen = signal(false);
   protected readonly manualSearchTerm = signal('');
   protected readonly selectedCategoryId = signal<string | null>(null);
@@ -138,8 +140,15 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!categoryId) {
       return [];
     }
+    if (categoryId === PosComponent.ALL_PRODUCTS_ID) {
+      return products;
+    }
     return products.filter((product) => this.categoryIdOf(product) === categoryId);
   });
+
+  protected readonly hasAnyProducts = computed(() =>
+    this.allProducts().some((product) => product.active),
+  );
 
   private categoryIdOf(product: Product): string | null {
     const category = product.categoryId;
@@ -161,7 +170,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor() {
     effect(() => {
       if (
-        this.pwaInstall.canInstall() &&
+        (this.pwaInstall.canInstall() || this.pwaInstall.isIos()) &&
         !this.pwaInstall.isStandalone() &&
         !this.pwaInstall.isDismissed()
       ) {
@@ -440,6 +449,10 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected selectManualCategory(categoryId: string): void {
     this.selectedCategoryId.set(categoryId);
+  }
+
+  protected selectAllProducts(): void {
+    this.selectedCategoryId.set(PosComponent.ALL_PRODUCTS_ID);
   }
 
   protected backToCategories(): void {

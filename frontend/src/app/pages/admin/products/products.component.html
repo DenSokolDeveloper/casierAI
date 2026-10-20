@@ -36,6 +36,10 @@
           @for (category of categories(); track category._id) {
             <mat-option [value]="category._id">{{ category.name }}</mat-option>
           }
+          <mat-option [value]="CREATE_CATEGORY_VALUE" class="create-category-option">
+            <mat-icon>add</mat-icon>
+            {{ 'admin.products.addCategoryInline' | translate }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -164,5 +168,49 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
     </mat-card>
+  }
+
+  @if (showCategoryDialog()) {
+    <div class="dialog-backdrop" (click)="cancelCategoryDialog()">
+      <mat-card class="dialog-card" (click)="$event.stopPropagation()">
+        <h3>{{ 'admin.products.addCategoryInline' | translate }}</h3>
+
+        @if (categoryDialogError()) {
+          <p class="error">{{ categoryDialogError() | translate }}</p>
+        }
+
+        <form class="entity-form" [formGroup]="categoryForm" (ngSubmit)="submitCategoryDialog()">
+          <mat-form-field appearance="outline" class="field-full">
+            <mat-label>{{ 'admin.categories.name' | translate }}</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field-full">
+            <mat-label>{{ 'admin.categories.description' | translate }}</mat-label>
+            <input matInput formControlName="description" />
+          </mat-form-field>
+
+          <div class="photo-field field-full">
+            @if (categoryPhotoPreview()) {
+              <img [src]="categoryPhotoPreview()" class="photo-preview" alt="" />
+            }
+            <label class="photo-upload">
+              <mat-icon>photo_camera</mat-icon>
+              {{ 'admin.categories.photo' | translate }}
+              <input type="file" accept="image/*" (change)="onCategoryPhotoSelected($event)" />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="categoryForm.invalid">
+              {{ 'common.add' | translate }}
+            </button>
+            <button mat-stroked-button type="button" (click)="cancelCategoryDialog()">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
   }
 </div>

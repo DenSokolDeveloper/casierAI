@@ -108,6 +108,8 @@
       "name": "Name",
       "category": "Category",
       "noCategory": "No category",
+      "addCategoryInline": "Add category",
+      "categoryDialogSaveError": "Could not create the category",
       "priceType": "Price type",
       "priceFixed": "Per item",
       "priceWeight": "Per kg",

@@ -108,6 +108,8 @@
       "name": "Nazwa",
       "category": "Kategoria",
       "noCategory": "Bez kategorii",
+      "addCategoryInline": "Dodaj kategorię",
+      "categoryDialogSaveError": "Nie udało się utworzyć kategorii",
       "priceType": "Typ ceny",
       "priceFixed": "Za sztukę",
       "priceWeight": "Za kg",

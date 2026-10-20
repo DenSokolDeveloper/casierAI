@@ -108,6 +108,34 @@
     }
   }
 
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 16px;
+    padding-top: max(16px, 8vh);
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+  }
+
+  .dialog-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 24px;
+    --mdc-elevated-card-container-elevation: var(--mat-sys-level3);
+    box-shadow: var(--mat-sys-level3);
+
+    h3 {
+      margin: 0 0 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+  }
+
   .table-card {
     padding: 0;
     overflow-x: auto;
@@ -168,5 +196,22 @@
         }
       }
     }
+  }
+}
+
+// mat-select renders its panel in a CDK overlay appended to <body>, outside
+// this component's view - plain ::ng-deep (no :host prefix) is the only way
+// to reach it from a component-scoped stylesheet.
+::ng-deep .create-category-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-primary);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 }

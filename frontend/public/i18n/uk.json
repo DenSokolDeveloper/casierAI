@@ -108,6 +108,8 @@
       "name": "Назва",
       "category": "Категорія",
       "noCategory": "Без категорії",
+      "addCategoryInline": "Додати категорію",
+      "categoryDialogSaveError": "Не вдалося створити категорію",
       "priceType": "Тип ціни",
       "priceFixed": "За штуку",
       "priceWeight": "За кг",

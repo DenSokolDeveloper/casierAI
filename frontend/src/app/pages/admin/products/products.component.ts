@@ -61,6 +61,19 @@ export class ProductsComponent implements OnInit {
     active: [true],
   });
 
+  protected readonly CREATE_CATEGORY_VALUE = '__create_category__';
+  protected readonly showCategoryDialog = signal(false);
+  protected readonly categoryDialogError = signal<string | null>(null);
+  protected readonly categoryPhoto = signal<File | null>(null);
+  protected readonly categoryPhotoPreview = signal<string | null>(null);
+
+  protected readonly categoryForm = this.fb.group({
+    name: ['', Validators.required],
+    description: [''],
+  });
+
+  private lastCategoryId = '';
+
   private static readonly FIXED_UNIT_OPTIONS = [
     { value: 'pcs', labelKey: 'admin.products.unitPcs' },
     { value: 'pack', labelKey: 'admin.products.unitPack' },
@@ -87,6 +100,15 @@ export class ProductsComponent implements OnInit {
         return;
       }
       this.form.get('unit')!.setValue(priceType === 'perWeight' ? 'kg' : 'pcs');
+    });
+
+    this.form.get('categoryId')!.valueChanges.subscribe((current) => {
+      if (current === this.CREATE_CATEGORY_VALUE) {
+        this.form.get('categoryId')!.setValue(this.lastCategoryId, { emitEvent: false });
+        this.openCategoryDialog();
+        return;
+      }
+      this.lastCategoryId = current ?? '';
     });
   }
 
@@ -259,5 +281,61 @@ export class ProductsComponent implements OnInit {
       next: () => this.load(),
       error: () => this.errorMessage.set('admin.products.deleteError'),
     });
+  }
+
+  protected openCategoryDialog(): void {
+    this.categoryForm.reset({ name: '', description: '' });
+    this.categoryPhoto.set(null);
+    this.categoryPhotoPreview.set(null);
+    this.categoryDialogError.set(null);
+    this.showCategoryDialog.set(true);
+  }
+
+  protected cancelCategoryDialog(): void {
+    this.showCategoryDialog.set(false);
+  }
+
+  protected onCategoryPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    this.categoryPhoto.set(file);
+    const reader = new FileReader();
+    reader.onload = () => this.categoryPhotoPreview.set(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  protected submitCategoryDialog(): void {
+    if (this.categoryForm.invalid) {
+      return;
+    }
+    const { name, description } = this.categoryForm.getRawValue();
+    this.categoryDialogError.set(null);
+    this.categoriesService.create({ name: name!, description: description || undefined }).subscribe({
+      next: (category) => this.afterCategoryCreated(category),
+      error: () => this.categoryDialogError.set('admin.products.categoryDialogSaveError'),
+    });
+  }
+
+  private afterCategoryCreated(category: Category): void {
+    const photo = this.categoryPhoto();
+    if (!photo) {
+      this.applyNewCategory(category);
+      return;
+    }
+    this.categoriesService.uploadPhoto(category._id, photo).subscribe({
+      next: (updated) => this.applyNewCategory(updated),
+      error: () => this.applyNewCategory(category),
+    });
+  }
+
+  private applyNewCategory(category: Category): void {
+    this.categories.update((list) =>
+      [...list, category].sort((a, b) => a.name.localeCompare(b.name)),
+    );
+    this.form.get('categoryId')!.setValue(category._id);
+    this.showCategoryDialog.set(false);
   }
 }

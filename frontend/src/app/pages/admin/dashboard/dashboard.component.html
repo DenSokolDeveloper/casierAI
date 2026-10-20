@@ -37,8 +37,21 @@
       </div>
     }
 
+    <div class="period-switch">
+      @for (period of periodOptions; track period) {
+        <button
+          type="button"
+          class="period-btn"
+          [class.active]="periodDays() === period"
+          (click)="selectPeriod(period)"
+        >
+          {{ 'admin.dashboard.periodDays' | translate: { days: period } }}
+        </button>
+      }
+    </div>
+
     <mat-card class="chart-section">
-      <h2>{{ 'admin.dashboard.salesChartTitle' | translate }}</h2>
+      <h2>{{ 'admin.dashboard.salesChartTitle' | translate: { days: periodDays() } }}</h2>
       @if (salesByDay().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noChartData' | translate }}</p>
       } @else {
@@ -56,7 +69,7 @@
     </mat-card>
 
     <mat-card class="list-section">
-      <h2>{{ 'admin.dashboard.topProductsTitle' | translate }}</h2>
+      <h2>{{ 'admin.dashboard.topProductsTitle' | translate: { days: periodDays() } }}</h2>
       @if (topProducts().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noSales' | translate }}</p>
       } @else {
@@ -95,7 +108,9 @@
           </ng-container>
           <ng-container matColumnDef="stockQty">
             <th mat-header-cell *matHeaderCellDef>{{ 'admin.dashboard.colStock' | translate }}</th>
-            <td mat-cell *matCellDef="let product" class="low">{{ product.stockQty }} {{ product.unit }}</td>
+            <td mat-cell *matCellDef="let product" class="low">
+              {{ product.stockQty }} {{ product.unit | unitLabel | translate }}
+            </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: lowStockColumns"></tr>

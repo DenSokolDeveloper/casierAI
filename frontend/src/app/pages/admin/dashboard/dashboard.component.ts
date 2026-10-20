@@ -13,6 +13,7 @@ import {
   SalesByDayPoint,
   TopProduct,
 } from '../../../core/models/dashboard.models';
+import { UnitLabelPipe } from '../../../core/pipes/unit-label.pipe';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -23,6 +24,7 @@ import {
     MatIconModule,
     MatProgressSpinnerModule,
     TranslatePipe,
+    UnitLabelPipe,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -44,8 +46,20 @@ export class DashboardComponent implements OnInit {
   protected readonly topProductColumns = ['name', 'qty', 'revenue'];
   protected readonly lowStockColumns = ['name', 'category', 'stockQty'];
 
+  protected static readonly PERIOD_OPTIONS = [7, 14, 30, 90];
+  protected readonly periodOptions = DashboardComponent.PERIOD_OPTIONS;
+  protected readonly periodDays = signal(7);
+
   ngOnInit(): void {
     this.load();
+  }
+
+  selectPeriod(days: number): void {
+    if (days === this.periodDays()) {
+      return;
+    }
+    this.periodDays.set(days);
+    this.loadPeriod();
   }
 
   load(): void {
@@ -54,8 +68,8 @@ export class DashboardComponent implements OnInit {
 
     forkJoin({
       summary: this.dashboardService.getSummary(),
-      salesByDay: this.dashboardService.getSalesByDay(7),
-      topProducts: this.dashboardService.getTopProducts(7, 5),
+      salesByDay: this.dashboardService.getSalesByDay(this.periodDays()),
+      topProducts: this.dashboardService.getTopProducts(this.periodDays(), 5),
       lowStock: this.dashboardService.getLowStock(),
     }).subscribe({
       next: (result) => {
@@ -63,6 +77,26 @@ export class DashboardComponent implements OnInit {
         this.salesByDay.set(result.salesByDay);
         this.topProducts.set(result.topProducts);
         this.lowStock.set(result.lowStock);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.errorMessage.set('admin.dashboard.loadError');
+      },
+    });
+  }
+
+  private loadPeriod(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    forkJoin({
+      salesByDay: this.dashboardService.getSalesByDay(this.periodDays()),
+      topProducts: this.dashboardService.getTopProducts(this.periodDays(), 5),
+    }).subscribe({
+      next: (result) => {
+        this.salesByDay.set(result.salesByDay);
+        this.topProducts.set(result.topProducts);
         this.isLoading.set(false);
       },
       error: () => {

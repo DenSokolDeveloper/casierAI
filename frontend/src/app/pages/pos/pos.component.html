@@ -271,24 +271,35 @@
       @if (cart().length === 0) {
         <p class="hint">{{ 'pos.cartEmpty' | translate }}</p>
       } @else {
-        <mat-list class="cart">
+        <div class="cart">
           @for (item of cart(); track item.productId + '-' + $index; let i = $index) {
-            <mat-list-item>
-              <mat-icon matListItemIcon>shopping_basket</mat-icon>
-              <span matListItemTitle>{{ item.name }}</span>
-              <span matListItemLine>{{ item.unitPrice }} × {{ item.qty }} {{ item.unit }}</span>
-              <div matListItemMeta class="row-meta">
+            <div class="cart-row">
+              <div class="cart-row-info">
+                <span class="cart-row-name">{{ item.name }}</span>
+                <span class="cart-row-price">
+                  {{ item.unitPrice }} × {{ item.qty }} {{ item.unit | unitLabel | translate }}
+                </span>
+              </div>
+              <div class="row-meta">
                 @if (item.priceType === 'fixed') {
-                  <button mat-icon-button (click)="changeQty(i, -1)"><mat-icon>remove</mat-icon></button>
-                  <span class="qty">{{ item.qty }}</span>
-                  <button mat-icon-button (click)="changeQty(i, 1)"><mat-icon>add</mat-icon></button>
+                  <div class="cart-qty-stepper">
+                    <button type="button" class="step-btn" (click)="changeQty(i, -1)">
+                      <mat-icon>remove</mat-icon>
+                    </button>
+                    <span class="qty">{{ item.qty }}</span>
+                    <button type="button" class="step-btn" (click)="changeQty(i, 1)">
+                      <mat-icon>add</mat-icon>
+                    </button>
+                  </div>
                 }
                 <span class="line-total">{{ item.lineTotal }}</span>
-                <button mat-icon-button (click)="removeItem(i)"><mat-icon>close</mat-icon></button>
+                <button mat-icon-button class="remove-btn" (click)="removeItem(i)">
+                  <mat-icon>close</mat-icon>
+                </button>
               </div>
-            </mat-list-item>
+            </div>
           }
-        </mat-list>
+        </div>
       }
 
       @if (checkoutError()) {

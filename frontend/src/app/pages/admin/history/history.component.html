@@ -4,12 +4,33 @@
     <button
       mat-stroked-button
       type="button"
-      [disabled]="transactions().length === 0"
+      [disabled]="filteredTransactions().length === 0"
       (click)="exportCsv()"
     >
       <mat-icon>download</mat-icon>
       {{ 'admin.history.exportButton' | translate }}
     </button>
+  </div>
+
+  <div class="date-filter">
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>{{ 'admin.history.fromDate' | translate }}</mat-label>
+      <input
+        matInput
+        type="date"
+        [ngModel]="fromDate()"
+        (ngModelChange)="setFromDate($event)"
+      />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="date-field">
+      <mat-label>{{ 'admin.history.toDate' | translate }}</mat-label>
+      <input matInput type="date" [ngModel]="toDate()" (ngModelChange)="setToDate($event)" />
+    </mat-form-field>
+    @if (fromDate() || toDate()) {
+      <button mat-button type="button" (click)="clearDateFilter()">
+        {{ 'admin.history.clearFilter' | translate }}
+      </button>
+    }
   </div>
 
   @if (errorMessage()) {
@@ -22,6 +43,8 @@
     </div>
   } @else if (transactions().length === 0) {
     <p class="empty">{{ 'admin.history.empty' | translate }}</p>
+  } @else if (filteredTransactions().length === 0) {
+    <p class="empty">{{ 'admin.history.noResultsForFilter' | translate }}</p>
   } @else {
     <div class="history-header">
       <span class="col-date">{{ 'admin.history.colDate' | translate }}</span>
@@ -31,7 +54,7 @@
     </div>
 
     <div class="transaction-list">
-      @for (tx of transactions(); track tx._id) {
+      @for (tx of filteredTransactions(); track tx._id) {
         <div class="transaction-row" [class.expanded]="expandedId() === tx._id">
           <button type="button" class="row-summary" (click)="toggle(tx._id)">
             <mat-icon class="chevron">
@@ -58,7 +81,7 @@
                   @for (item of tx.items; track item.productId) {
                     <tr>
                       <td>{{ item.name }}</td>
-                      <td>{{ item.qty }} {{ item.unit }}</td>
+                      <td>{{ item.qty }} {{ item.unit | unitLabel | translate }}</td>
                       <td>{{ item.unitPrice | number: '1.0-2' }}</td>
                       <td>{{ item.lineTotal | number: '1.0-2' }}</td>
                     </tr>

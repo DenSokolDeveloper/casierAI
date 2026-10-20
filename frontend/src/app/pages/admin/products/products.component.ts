@@ -15,6 +15,7 @@ import { ProductsService } from '../../../core/services/products.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category, PriceType, Product } from '../../../core/models/catalog.models';
 import { downloadCsv } from '../../../core/utils/csv.util';
+import { UnitLabelPipe } from '../../../core/pipes/unit-label.pipe';
 
 @Component({
   selector: 'app-admin-products',
@@ -31,6 +32,7 @@ import { downloadCsv } from '../../../core/utils/csv.util';
     MatProgressSpinnerModule,
     MatTooltipModule,
     TranslatePipe,
+    UnitLabelPipe,
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',

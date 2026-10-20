@@ -19,7 +19,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -33,6 +32,7 @@ import { PwaInstallService } from '../../core/services/pwa-install.service';
 import { CartItem, RecognitionCandidate } from '../../core/models/pos.models';
 import { Category, Product } from '../../core/models/catalog.models';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { UnitLabelPipe } from '../../core/pipes/unit-label.pipe';
 
 @Component({
   selector: 'app-pos',
@@ -46,12 +46,12 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatListModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatTooltipModule,
     TranslatePipe,
     LanguageSwitcherComponent,
+    UnitLabelPipe,
   ],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss',

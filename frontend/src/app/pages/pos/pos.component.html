@@ -21,7 +21,7 @@
 
   <div class="pos-content">
     <section class="select-section">
-      <div class="camera-frame" [class.unavailable]="cameraError()">
+      <div class="camera-frame" [class.unavailable]="cameraError() || !cameraEnabled()">
         <video #video playsinline muted></video>
         <canvas #canvas hidden></canvas>
         @if (cameraError()) {
@@ -29,24 +29,43 @@
             <mat-icon>videocam_off</mat-icon>
             <span>{{ cameraError() | translate }}</span>
           </div>
+        } @else if (!cameraEnabled()) {
+          <div class="camera-placeholder">
+            <mat-icon>videocam_off</mat-icon>
+            <span>{{ 'pos.cameraOffHint' | translate }}</span>
+            <button mat-flat-button color="primary" type="button" (click)="enableCamera()">
+              <mat-icon>videocam</mat-icon>
+              {{ 'pos.enableCamera' | translate }}
+            </button>
+          </div>
         }
       </div>
 
       <div class="camera-actions">
-        <button
-          mat-flat-button
-          color="primary"
-          class="capture-btn"
-          [disabled]="isCapturing()"
-          (click)="capturePhoto()"
-        >
-          @if (isCapturing()) {
-            <mat-spinner diameter="20" />
-          } @else {
-            <mat-icon>photo_camera</mat-icon>
-          }
-          {{ (isCapturing() ? 'pos.capturing' : 'pos.captureButton') | translate }}
-        </button>
+        @if (cameraEnabled()) {
+          <button
+            mat-flat-button
+            color="primary"
+            class="capture-btn"
+            [disabled]="isCapturing()"
+            (click)="capturePhoto()"
+          >
+            @if (isCapturing()) {
+              <mat-spinner diameter="20" />
+            } @else {
+              <mat-icon>photo_camera</mat-icon>
+            }
+            {{ (isCapturing() ? 'pos.capturing' : 'pos.captureButton') | translate }}
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [matTooltip]="'pos.disableCamera' | translate"
+            (click)="disableCamera()"
+          >
+            <mat-icon>videocam_off</mat-icon>
+          </button>
+        }
         <label class="file-fallback">
           <mat-icon>upload</mat-icon>
           {{ 'pos.uploadPhoto' | translate }}

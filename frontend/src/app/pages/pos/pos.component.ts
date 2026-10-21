@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   OnDestroy,
@@ -56,7 +55,7 @@ import { UnitLabelPipe } from '../../core/pipes/unit-label.pipe';
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.scss',
 })
-export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PosComponent implements OnInit, OnDestroy {
   protected readonly authService = inject(AuthService);
   private readonly recognitionService = inject(RecognitionService);
   private readonly transactionsService = inject(TransactionsService);
@@ -71,6 +70,7 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private mediaStream: MediaStream | null = null;
 
+  protected readonly cameraEnabled = signal(false);
   protected readonly cameraError = signal<string | null>(null);
   protected readonly isCapturing = signal(false);
   protected readonly candidates = signal<RecognitionCandidate[]>([]);
@@ -204,12 +204,19 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showInstallPrompt.set(false);
   }
 
-  ngAfterViewInit(): void {
+  ngOnDestroy(): void {
+    this.stopCamera();
+  }
+
+  protected enableCamera(): void {
+    this.cameraEnabled.set(true);
     void this.startCamera();
   }
 
-  ngOnDestroy(): void {
+  protected disableCamera(): void {
     this.stopCamera();
+    this.cameraEnabled.set(false);
+    this.cameraError.set(null);
   }
 
   private async startCamera(): Promise<void> {
@@ -237,6 +244,10 @@ export class PosComponent implements OnInit, AfterViewInit, OnDestroy {
   private stopCamera(): void {
     this.mediaStream?.getTracks().forEach((track) => track.stop());
     this.mediaStream = null;
+    const video = this.videoElementRef?.nativeElement;
+    if (video) {
+      video.srcObject = null;
+    }
   }
 
   protected capturePhoto(): void {

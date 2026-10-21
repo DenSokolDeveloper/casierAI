@@ -379,6 +379,20 @@
   }
 }
 
+// Shared by the quantity dialog's big stepper and the cart row's small
+// one - only size/gap differ between the two call sites.
+.step-btn {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  cursor: pointer;
+}
+
 .qty-dialog {
   .weight-amount {
     display: flex;
@@ -449,17 +463,8 @@
     background: var(--mat-sys-surface-container-high);
 
     .step-btn {
-      flex: 0 0 auto;
       width: 44px;
       height: 44px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
-      cursor: pointer;
 
       &:disabled {
         opacity: 0.4;
@@ -569,17 +574,8 @@
       gap: 8px;
 
       .step-btn {
-        flex: 0 0 auto;
         width: 34px;
         height: 34px;
-        border-radius: 50%;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--mat-sys-primary-container);
-        color: var(--mat-sys-on-primary-container);
-        cursor: pointer;
 
         mat-icon {
           font-size: 20px;

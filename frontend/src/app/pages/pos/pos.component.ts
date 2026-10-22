@@ -117,17 +117,9 @@ export class PosComponent implements OnInit, OnDestroy {
   protected readonly allProducts = signal<Product[]>([]);
   protected readonly allCategories = signal<Category[]>([]);
 
-  protected readonly manualCategories = computed(() => {
-    const idsWithProducts = new Set(
-      this.allProducts()
-        .filter((product) => product.active)
-        .map((product) => this.categoryIdOf(product))
-        .filter((id): id is string => !!id),
-    );
-    return this.allCategories()
-      .filter((category) => idsWithProducts.has(category._id))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
+  protected readonly manualCategories = computed(() =>
+    [...this.allCategories()].sort((a, b) => a.name.localeCompare(b.name)),
+  );
 
   protected readonly manualResults = computed(() => {
     const term = this.manualSearchTerm().trim().toLowerCase();

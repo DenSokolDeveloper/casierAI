@@ -35,8 +35,7 @@
   "pos": {
     "cameraUnsupported": "This browser doesn't support the camera",
     "cameraError": "No camera access — use the photo upload below",
-    "cameraOffHint": "Camera is off",
-    "enableCamera": "Turn on camera",
+    "recognizeByPhoto": "Recognize item by photo",
     "disableCamera": "Turn off camera",
     "captureButton": "Scan item",
     "capturing": "Recognizing…",

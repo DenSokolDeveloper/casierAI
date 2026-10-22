@@ -35,8 +35,7 @@
   "pos": {
     "cameraUnsupported": "Ta przeglądarka nie obsługuje kamery",
     "cameraError": "Brak dostępu do kamery — skorzystaj z przesyłania zdjęcia poniżej",
-    "cameraOffHint": "Kamera jest wyłączona",
-    "enableCamera": "Włącz kamerę",
+    "recognizeByPhoto": "Rozpoznaj produkt ze zdjęcia",
     "disableCamera": "Wyłącz kamerę",
     "captureButton": "Zeskanuj produkt",
     "capturing": "Rozpoznawanie…",

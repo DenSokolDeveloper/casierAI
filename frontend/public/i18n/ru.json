@@ -35,8 +35,7 @@
   "pos": {
     "cameraUnsupported": "Камера не поддерживается этим браузером",
     "cameraError": "Нет доступа к камере — используйте загрузку фото ниже",
-    "cameraOffHint": "Камера выключена",
-    "enableCamera": "Включить камеру",
+    "recognizeByPhoto": "Определить товар по фото",
     "disableCamera": "Выключить камеру",
     "captureButton": "Снять товар",
     "capturing": "Распознаём…",

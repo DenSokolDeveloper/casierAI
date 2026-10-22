@@ -18,6 +18,7 @@ export type PriceType = 'fixed' | 'perWeight';
 export interface Product {
   _id: string;
   name: string;
+  code?: string;
   categoryId: Category | string | null;
   priceType: PriceType;
   price: number;
@@ -30,6 +31,7 @@ export interface Product {
 
 export interface CreateProductPayload {
   name: string;
+  code?: string;
   categoryId?: string | null;
   priceType: PriceType;
   price: number;

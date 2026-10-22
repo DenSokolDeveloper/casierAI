@@ -4,6 +4,7 @@ export interface RecognitionCandidate {
   productId: string;
   confidence: number;
   name: string;
+  code?: string;
   price: number;
   priceType: PriceType;
   unit: string;

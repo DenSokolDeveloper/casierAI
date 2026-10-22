@@ -14,6 +14,10 @@ export class CreateProductDto {
   name: string;
 
   @IsOptional()
+  @IsString()
+  code?: string;
+
+  @IsOptional()
   @IsMongoId()
   categoryId?: string | null;
 

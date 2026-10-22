@@ -50,10 +50,11 @@ export class ProductsComponent implements OnInit {
   protected readonly editingId = signal<string | null>(null);
   protected readonly selectedPhoto = signal<File | null>(null);
   protected readonly photoPreview = signal<string | null>(null);
-  protected readonly displayedColumns = ['photo', 'name', 'category', 'price', 'stock', 'active', 'actions'];
+  protected readonly displayedColumns = ['photo', 'name', 'code', 'category', 'price', 'stock', 'active', 'actions'];
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],
+    code: [''],
     categoryId: [''],
     priceType: ['fixed' as PriceType, Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
@@ -152,6 +153,7 @@ export class ProductsComponent implements OnInit {
     this.editingId.set(null);
     this.form.reset({
       name: '',
+      code: '',
       categoryId: '',
       priceType: 'fixed',
       price: 0,
@@ -173,6 +175,7 @@ export class ProductsComponent implements OnInit {
         : product.categoryId._id;
     this.form.setValue({
       name: product.name,
+      code: product.code ?? '',
       categoryId,
       priceType: product.priceType,
       price: product.price,
@@ -209,6 +212,7 @@ export class ProductsComponent implements OnInit {
     const raw = this.form.getRawValue();
     const payload = {
       name: raw.name!,
+      code: raw.code || undefined,
       categoryId: raw.categoryId || null,
       priceType: raw.priceType!,
       price: raw.price!,
@@ -253,6 +257,7 @@ export class ProductsComponent implements OnInit {
   exportCsv(): void {
     const headers = [
       'Name',
+      'Code',
       'Category',
       'Price type',
       'Price',
@@ -262,6 +267,7 @@ export class ProductsComponent implements OnInit {
     ];
     const rows = this.products().map((product) => [
       product.name,
+      product.code ?? '',
       this.categoryName(product),
       product.priceType,
       product.price,

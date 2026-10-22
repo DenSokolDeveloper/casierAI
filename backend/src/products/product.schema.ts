@@ -14,6 +14,11 @@ export class Product {
   @Prop({ required: true })
   name: string;
 
+  // Internal product code, e.g. printed on a price sheet - shown to the
+  // cashier to key into a separate payment/scale terminal.
+  @Prop()
+  code?: string;
+
   @Prop({ type: Types.ObjectId, ref: Category.name })
   categoryId?: Types.ObjectId;
 

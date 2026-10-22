@@ -30,6 +30,11 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
+        <mat-label>{{ 'admin.products.code' | translate }}</mat-label>
+        <input matInput formControlName="code" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
         <mat-label>{{ 'admin.products.category' | translate }}</mat-label>
         <mat-select formControlName="categoryId">
           <mat-option value="">{{ 'admin.products.noCategory' | translate }}</mat-option>
@@ -122,6 +127,11 @@
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.name' | translate }}</th>
           <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.code' | translate }}</th>
+          <td mat-cell *matCellDef="let product">{{ product.code || '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="category">

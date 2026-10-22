@@ -17,6 +17,7 @@ export interface RecognitionCandidate {
   productId: string;
   confidence: number;
   name: string;
+  code?: string;
   price: number;
   priceType: 'fixed' | 'perWeight';
   unit: string;
@@ -113,7 +114,7 @@ export class RecognitionService {
     const byId = new Map(activeProducts.map((product) => [product.id, product]));
 
     const candidates = response.parsed_output.candidates
-      .map((match) => {
+      .map((match): RecognitionCandidate | null => {
         const product = byId.get(match.productId);
         if (!product) {
           return null;
@@ -122,6 +123,7 @@ export class RecognitionService {
           productId: match.productId,
           confidence: match.confidence,
           name: product.name,
+          code: product.code,
           price: product.price,
           priceType: product.priceType,
           unit: product.unit,

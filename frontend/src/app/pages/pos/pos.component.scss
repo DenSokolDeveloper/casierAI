@@ -234,6 +234,21 @@
     .tile-meta {
       font-size: 0.8rem;
       color: var(--mat-sys-on-surface-variant);
+
+      .tile-code {
+        display: inline-block;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--mat-sys-primary);
+        margin-right: 4px;
+
+        &::after {
+          content: "·";
+          margin-left: 4px;
+          color: var(--mat-sys-on-surface-variant);
+          font-weight: 400;
+        }
+      }
     }
   }
 }
@@ -402,6 +417,32 @@
       margin: 2px 0 0;
       font-size: 0.85rem;
       color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  .product-code-badge {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+
+    .code-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      opacity: 0.8;
+    }
+
+    .code-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
   }
 }

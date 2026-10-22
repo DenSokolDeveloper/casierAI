@@ -88,6 +88,9 @@
               <span class="tile-body">
                 <span class="tile-name">{{ candidate.name }}</span>
                 <span class="tile-meta">
+                  @if (candidate.code) {
+                    <span class="tile-code">{{ candidate.code }}</span>
+                  }
                   {{ candidate.price }}{{ candidate.priceType === 'perWeight' ? ' / кг' : '' }}
                   · {{ (candidate.confidence * 100) | number: '1.0-0' }}% {{ 'pos.confidenceSuffix' | translate }}
                 </span>
@@ -157,6 +160,9 @@
                       <span class="tile-body">
                         <span class="tile-name">{{ product.name }}</span>
                         <span class="tile-meta">
+                          @if (product.code) {
+                            <span class="tile-code">{{ product.code }}</span>
+                          }
                           {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
                         </span>
                       </span>
@@ -186,6 +192,13 @@
               </p>
             </div>
           </div>
+
+          @if (item.code) {
+            <div class="product-code-badge">
+              <span class="code-label">{{ 'pos.productCode' | translate }}</span>
+              <span class="code-value">{{ item.code }}</span>
+            </div>
+          }
 
           @if (item.priceType === 'perWeight') {
             <div class="weight-amount">

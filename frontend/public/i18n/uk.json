@@ -10,7 +10,14 @@
     "active": "Активний",
     "logout": "Вийти",
     "admin": "Адмінка",
-    "backToHome": "На головну"
+    "backToHome": "На головну",
+    "createdAt": "Створено",
+    "paginatorItemsPerPage": "На сторінці:",
+    "paginatorNextPage": "Наступна сторінка",
+    "paginatorPreviousPage": "Попередня сторінка",
+    "paginatorFirstPage": "Перша сторінка",
+    "paginatorLastPage": "Остання сторінка",
+    "paginatorOf": "з"
   },
   "auth": {
     "login": {
@@ -131,7 +138,12 @@
       "choosePhoto": "Обрати фото",
       "empty": "Товарів поки немає.",
       "confirmDelete": "Видалити товар \"{{name}}\"?",
-      "colActive": "Активний"
+      "colActive": "Активний",
+      "editTitle": "Редагувати товар",
+      "searchPlaceholder": "Пошук за назвою або артикулом",
+      "noResults": "Нічого не знайдено",
+      "deleteSelected": "Видалити вибрані ({{count}})",
+      "confirmDeleteSelected": "Видалити вибрані товари ({{count}})?"
     },
     "categories": {
       "title": "Категорії",
@@ -144,7 +156,12 @@
       "description": "Опис (необов'язково)",
       "photo": "Фото",
       "empty": "Категорій поки немає.",
-      "confirmDelete": "Видалити категорію \"{{name}}\"?"
+      "confirmDelete": "Видалити категорію \"{{name}}\"?",
+      "editTitle": "Редагувати категорію",
+      "searchPlaceholder": "Пошук за назвою",
+      "noResults": "Нічого не знайдено",
+      "deleteSelected": "Видалити вибрані ({{count}})",
+      "confirmDeleteSelected": "Видалити вибрані категорії ({{count}})?"
     },
     "users": {
       "title": "Співробітники",

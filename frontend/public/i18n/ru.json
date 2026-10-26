@@ -10,7 +10,14 @@
     "active": "Активен",
     "logout": "Выйти",
     "admin": "Админка",
-    "backToHome": "На главную"
+    "backToHome": "На главную",
+    "createdAt": "Создан",
+    "paginatorItemsPerPage": "На странице:",
+    "paginatorNextPage": "Следующая страница",
+    "paginatorPreviousPage": "Предыдущая страница",
+    "paginatorFirstPage": "Первая страница",
+    "paginatorLastPage": "Последняя страница",
+    "paginatorOf": "из"
   },
   "auth": {
     "login": {
@@ -131,7 +138,12 @@
       "choosePhoto": "Выбрать фото",
       "empty": "Товаров пока нет.",
       "confirmDelete": "Удалить товар \"{{name}}\"?",
-      "colActive": "Активен"
+      "colActive": "Активен",
+      "editTitle": "Изменить товар",
+      "searchPlaceholder": "Поиск по названию или артикулу",
+      "noResults": "Ничего не найдено",
+      "deleteSelected": "Удалить выбранные ({{count}})",
+      "confirmDeleteSelected": "Удалить выбранные товары ({{count}})?"
     },
     "categories": {
       "title": "Категории",
@@ -144,7 +156,12 @@
       "description": "Описание (необязательно)",
       "photo": "Фото",
       "empty": "Категорий пока нет.",
-      "confirmDelete": "Удалить категорию \"{{name}}\"?"
+      "confirmDelete": "Удалить категорию \"{{name}}\"?",
+      "editTitle": "Изменить категорию",
+      "searchPlaceholder": "Поиск по названию",
+      "noResults": "Ничего не найдено",
+      "deleteSelected": "Удалить выбранные ({{count}})",
+      "confirmDeleteSelected": "Удалить выбранные категории ({{count}})?"
     },
     "users": {
       "title": "Сотрудники",

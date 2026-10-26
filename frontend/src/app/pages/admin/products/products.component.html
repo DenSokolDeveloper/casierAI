@@ -22,97 +22,50 @@
     <p class="error">{{ errorMessage() | translate }}</p>
   }
 
-  <mat-card class="entity-form-card">
-    <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.name' | translate }}</mat-label>
-        <input matInput formControlName="name" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.code' | translate }}</mat-label>
-        <input matInput formControlName="code" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.category' | translate }}</mat-label>
-        <mat-select formControlName="categoryId">
-          <mat-option value="">{{ 'admin.products.noCategory' | translate }}</mat-option>
-          @for (category of categories(); track category._id) {
-            <mat-option [value]="category._id">{{ category.name }}</mat-option>
-          }
-          <mat-option [value]="CREATE_CATEGORY_VALUE" class="create-category-option">
-            <mat-icon>add</mat-icon>
-            {{ 'admin.products.addCategoryInline' | translate }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.priceType' | translate }}</mat-label>
-        <mat-select formControlName="priceType">
-          <mat-option value="fixed">{{ 'admin.products.priceFixed' | translate }}</mat-option>
-          <mat-option value="perWeight">{{ 'admin.products.priceWeight' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.price' | translate }}</mat-label>
-        <input matInput type="number" formControlName="price" min="0" step="0.01" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.unit' | translate }}</mat-label>
-        <mat-select formControlName="unit">
-          @for (option of unitOptions(); track option.value) {
-            <mat-option [value]="option.value">
-              {{ option.labelKey ? (option.labelKey | translate) : option.value }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'admin.products.stock' | translate }}</mat-label>
-        <input matInput type="number" formControlName="stockQty" min="0" step="0.001" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="field-full">
-        <mat-label>{{ 'admin.products.visualDescription' | translate }}</mat-label>
-        <textarea matInput formControlName="visualDescription" rows="2"></textarea>
-      </mat-form-field>
-
-      <div class="photo-field">
-        @if (photoPreview()) {
-          <img [src]="photoPreview()" class="photo-preview" alt="" />
-        }
-        <label class="photo-upload">
-          <mat-icon>photo_camera</mat-icon>
-          {{ 'admin.products.choosePhoto' | translate }}
-          <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
-        </label>
-      </div>
-
-      <mat-slide-toggle formControlName="active">{{ 'common.active' | translate }}</mat-slide-toggle>
-
-      <div class="actions">
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-          {{ (editingId() ? 'common.save' : 'common.add') | translate }}
-        </button>
-        @if (editingId()) {
-          <button mat-stroked-button type="button" (click)="cancelEdit()">{{ 'common.cancel' | translate }}</button>
-        }
-      </div>
-    </form>
-  </mat-card>
-
   @if (isLoading()) {
     <div class="loading"><mat-spinner diameter="32" /></div>
   } @else if (products().length === 0) {
     <p class="empty">{{ 'admin.products.empty' | translate }}</p>
   } @else {
+    <div class="filters-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ 'admin.products.searchPlaceholder' | translate }}</mat-label>
+        <input
+          matInput
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      @if (selection.selected.length > 0) {
+        <button mat-stroked-button color="warn" type="button" (click)="deleteSelected()">
+          <mat-icon>delete</mat-icon>
+          {{ 'admin.products.deleteSelected' | translate: { count: selection.selected.length } }}
+        </button>
+      }
+    </div>
+
     <mat-card class="table-card">
-      <table mat-table [dataSource]="products()">
+      <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              [checked]="allSelected()"
+              [indeterminate]="selection.selected.length > 0 && !allSelected()"
+              (change)="toggleAll()"
+            />
+          </th>
+          <td mat-cell *matCellDef="let product">
+            <mat-checkbox
+              [checked]="selection.isSelected(product._id)"
+              (click)="$event.stopPropagation()"
+              (change)="toggleOne(product._id)"
+            />
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="photo">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let product">
@@ -125,32 +78,37 @@
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.name' | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'admin.products.name' | translate }}</th>
           <td mat-cell *matCellDef="let product">{{ product.name }}</td>
         </ng-container>
 
         <ng-container matColumnDef="code">
-          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.code' | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'admin.products.code' | translate }}</th>
           <td mat-cell *matCellDef="let product">{{ product.code || '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="category">
-          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.category' | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'admin.products.category' | translate }}</th>
           <td mat-cell *matCellDef="let product">{{ categoryName(product) }}</td>
         </ng-container>
 
         <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.price' | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'admin.products.price' | translate }}</th>
           <td mat-cell *matCellDef="let product">
             {{ product.price }}{{ product.priceType === 'perWeight' ? ' / кг' : '' }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="stock">
-          <th mat-header-cell *matHeaderCellDef>{{ 'admin.products.stock' | translate }}</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'admin.products.stock' | translate }}</th>
           <td mat-cell *matCellDef="let product">
             {{ product.stockQty }} {{ product.unit | unitLabel | translate }}
           </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'common.createdAt' | translate }}</th>
+          <td mat-cell *matCellDef="let product">{{ product.createdAt | date: 'dd.MM.yyyy' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="active">
@@ -177,13 +135,114 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [class.selected-row]="selection.isSelected(row._id)"
+        ></tr>
+        <tr class="no-data-row" *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length">{{ 'admin.products.noResults' | translate }}</td>
+        </tr>
       </table>
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="25"
+        showFirstLastButtons
+      />
     </mat-card>
   }
 
+  @if (showDialog()) {
+    <div class="dialog-backdrop" (click)="cancelEdit()">
+      <mat-card class="dialog-card form-dialog-card" (click)="$event.stopPropagation()">
+        <h3>{{ (editingId() ? 'admin.products.editTitle' : 'admin.products.newButton') | translate }}</h3>
+
+        <form class="entity-form" [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.name' | translate }}</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.code' | translate }}</mat-label>
+            <input matInput formControlName="code" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.category' | translate }}</mat-label>
+            <mat-select formControlName="categoryId">
+              <mat-option value="">{{ 'admin.products.noCategory' | translate }}</mat-option>
+              @for (category of categories(); track category._id) {
+                <mat-option [value]="category._id">{{ category.name }}</mat-option>
+              }
+              <mat-option [value]="CREATE_CATEGORY_VALUE" class="create-category-option">
+                <mat-icon>add</mat-icon>
+                {{ 'admin.products.addCategoryInline' | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.priceType' | translate }}</mat-label>
+            <mat-select formControlName="priceType">
+              <mat-option value="fixed">{{ 'admin.products.priceFixed' | translate }}</mat-option>
+              <mat-option value="perWeight">{{ 'admin.products.priceWeight' | translate }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.price' | translate }}</mat-label>
+            <input matInput type="number" formControlName="price" min="0" step="0.01" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.unit' | translate }}</mat-label>
+            <mat-select formControlName="unit">
+              @for (option of unitOptions(); track option.value) {
+                <mat-option [value]="option.value">
+                  {{ option.labelKey ? (option.labelKey | translate) : option.value }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'admin.products.stock' | translate }}</mat-label>
+            <input matInput type="number" formControlName="stockQty" min="0" step="0.001" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field-full">
+            <mat-label>{{ 'admin.products.visualDescription' | translate }}</mat-label>
+            <textarea matInput formControlName="visualDescription" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="photo-field">
+            @if (photoPreview()) {
+              <img [src]="photoPreview()" class="photo-preview" alt="" />
+            }
+            <label class="photo-upload">
+              <mat-icon>photo_camera</mat-icon>
+              {{ 'admin.products.choosePhoto' | translate }}
+              <input type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+            </label>
+          </div>
+
+          <mat-slide-toggle formControlName="active">{{ 'common.active' | translate }}</mat-slide-toggle>
+
+          <div class="actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ (editingId() ? 'common.save' : 'common.add') | translate }}
+            </button>
+            <button mat-stroked-button type="button" (click)="cancelEdit()">{{ 'common.cancel' | translate }}</button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+  }
+
   @if (showCategoryDialog()) {
-    <div class="dialog-backdrop" (click)="cancelCategoryDialog()">
+    <div class="dialog-backdrop category-dialog-backdrop" (click)="cancelCategoryDialog()">
       <mat-card class="dialog-card" (click)="$event.stopPropagation()">
         <h3>{{ 'admin.products.addCategoryInline' | translate }}</h3>
 

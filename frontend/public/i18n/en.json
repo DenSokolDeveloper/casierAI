@@ -10,7 +10,14 @@
     "active": "Active",
     "logout": "Log out",
     "admin": "Admin",
-    "backToHome": "Back to home"
+    "backToHome": "Back to home",
+    "createdAt": "Created",
+    "paginatorItemsPerPage": "Items per page:",
+    "paginatorNextPage": "Next page",
+    "paginatorPreviousPage": "Previous page",
+    "paginatorFirstPage": "First page",
+    "paginatorLastPage": "Last page",
+    "paginatorOf": "of"
   },
   "auth": {
     "login": {
@@ -131,7 +138,12 @@
       "choosePhoto": "Choose photo",
       "empty": "No products yet.",
       "confirmDelete": "Delete product \"{{name}}\"?",
-      "colActive": "Active"
+      "colActive": "Active",
+      "editTitle": "Edit product",
+      "searchPlaceholder": "Search by name or code",
+      "noResults": "Nothing found",
+      "deleteSelected": "Delete selected ({{count}})",
+      "confirmDeleteSelected": "Delete the selected products ({{count}})?"
     },
     "categories": {
       "title": "Categories",
@@ -144,7 +156,12 @@
       "description": "Description (optional)",
       "photo": "Photo",
       "empty": "No categories yet.",
-      "confirmDelete": "Delete category \"{{name}}\"?"
+      "confirmDelete": "Delete category \"{{name}}\"?",
+      "editTitle": "Edit category",
+      "searchPlaceholder": "Search by name",
+      "noResults": "Nothing found",
+      "deleteSelected": "Delete selected ({{count}})",
+      "confirmDeleteSelected": "Delete the selected categories ({{count}})?"
     },
     "users": {
       "title": "Staff",

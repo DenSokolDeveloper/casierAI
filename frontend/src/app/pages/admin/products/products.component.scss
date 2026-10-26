@@ -35,8 +35,16 @@
     color: var(--mat-sys-on-surface-variant);
   }
 
-  .entity-form-card {
-    padding: 16px;
+  .filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .search-field {
+      flex: 1 1 240px;
+      max-width: 360px;
+    }
   }
 
   .entity-form {
@@ -134,6 +142,14 @@
       font-size: 1.1rem;
       font-weight: 600;
     }
+
+    &.form-dialog-card {
+      max-width: 640px;
+    }
+  }
+
+  .category-dialog-backdrop {
+    z-index: 31;
   }
 
   .table-card {
@@ -170,11 +186,31 @@
       white-space: nowrap;
     }
 
+    .mat-column-select {
+      width: 44px;
+      padding: 0 0 0 12px;
+    }
+
+    .selected-row {
+      background: var(--mat-sys-primary-container);
+    }
+
+    .no-data-row td {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    mat-paginator {
+      border-top: 1px solid var(--mat-sys-outline-variant);
+    }
+
     // Least essential columns on a narrow screen - drop them instead of
     // forcing a horizontal scroll just to see name/price/stock.
     @media (max-width: 480px) {
       .mat-column-photo,
-      .mat-column-active {
+      .mat-column-active,
+      .mat-column-createdAt {
         display: none;
       }
 

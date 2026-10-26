@@ -1,25 +1,32 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DatePipe } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductsService } from '../../../core/services/products.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category, PriceType, Product } from '../../../core/models/catalog.models';
 import { downloadCsv } from '../../../core/utils/csv.util';
 import { UnitLabelPipe } from '../../../core/pipes/unit-label.pipe';
+import { TranslatedPaginatorIntl } from '../../../core/services/translated-paginator-intl.service';
 
 @Component({
   selector: 'app-admin-products',
   imports: [
+    FormsModule,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -27,13 +34,18 @@ import { UnitLabelPipe } from '../../../core/pipes/unit-label.pipe';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
     MatSlideToggleModule,
     MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    DatePipe,
     TranslatePipe,
     UnitLabelPipe,
   ],
+  providers: [{ provide: MatPaginatorIntl, useClass: TranslatedPaginatorIntl }],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss',
 })
@@ -50,7 +62,32 @@ export class ProductsComponent implements OnInit {
   protected readonly editingId = signal<string | null>(null);
   protected readonly selectedPhoto = signal<File | null>(null);
   protected readonly photoPreview = signal<string | null>(null);
-  protected readonly displayedColumns = ['photo', 'name', 'code', 'category', 'price', 'stock', 'active', 'actions'];
+  protected readonly showDialog = signal(false);
+  protected readonly searchTerm = signal('');
+
+  protected readonly displayedColumns = [
+    'select',
+    'photo',
+    'name',
+    'code',
+    'category',
+    'price',
+    'stock',
+    'createdAt',
+    'active',
+    'actions',
+  ];
+  protected readonly dataSource = new MatTableDataSource<Product>([]);
+  protected readonly selection = new SelectionModel<string>(true, []);
+
+  // A plain method, not computed(): the underlying SelectionModel and
+  // MatTableDataSource are not signals, so computed() would never see a
+  // dependency change and the result would cache stale forever. A method
+  // call is re-evaluated on every change-detection pass instead.
+  protected allSelected(): boolean {
+    const visible = this.dataSource.filteredData;
+    return visible.length > 0 && visible.every((product) => this.selection.isSelected(product._id));
+  }
 
   protected readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -88,6 +125,39 @@ export class ProductsComponent implements OnInit {
     { value: 'kg', labelKey: 'admin.products.unitKg' },
     { value: 'l', labelKey: 'admin.products.unitL' },
   ];
+
+  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
+    this.dataSource.paginator = value ?? null;
+  }
+
+  @ViewChild(MatSort) set sort(value: MatSort) {
+    this.dataSource.sort = value ?? null;
+  }
+
+  constructor() {
+    this.dataSource.filterPredicate = (product, filter) => {
+      const name = product.name.toLowerCase();
+      const code = (product.code ?? '').toLowerCase();
+      return name.includes(filter) || code.includes(filter);
+    };
+    this.dataSource.sortingDataAccessor = (product, sortHeaderId) => {
+      switch (sortHeaderId) {
+        case 'category':
+          return this.categoryName(product).toLowerCase();
+        case 'name':
+        case 'code':
+          return (sortHeaderId === 'name' ? product.name : product.code ?? '').toLowerCase();
+        case 'price':
+          return product.price;
+        case 'stock':
+          return product.stockQty;
+        case 'createdAt':
+          return product.createdAt;
+        default:
+          return '';
+      }
+    };
+  }
 
   ngOnInit(): void {
     this.categoriesService.list().subscribe({
@@ -127,11 +197,28 @@ export class ProductsComponent implements OnInit {
     return options;
   }
 
+  protected onSearchChange(term: string): void {
+    this.searchTerm.set(term);
+    this.dataSource.filter = term.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  protected sortData(sort: Sort): void {
+    void sort;
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
   load(): void {
     this.isLoading.set(true);
     this.productsService.list().subscribe({
       next: (products) => {
         this.products.set(products);
+        this.dataSource.data = products;
+        this.selection.clear();
         this.isLoading.set(false);
       },
       error: () => {
@@ -139,6 +226,53 @@ export class ProductsComponent implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  protected toggleAll(): void {
+    if (this.allSelected()) {
+      this.dataSource.filteredData.forEach((product) => this.selection.deselect(product._id));
+    } else {
+      this.dataSource.filteredData.forEach((product) => this.selection.select(product._id));
+    }
+  }
+
+  protected toggleOne(productId: string): void {
+    this.selection.toggle(productId);
+  }
+
+  protected deleteSelected(): void {
+    const ids = this.selection.selected;
+    if (ids.length === 0) {
+      return;
+    }
+    const confirmMessage = this.translate.instant('admin.products.confirmDeleteSelected', {
+      count: ids.length,
+    });
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+    this.errorMessage.set(null);
+    let remaining = ids.length;
+    let hadError = false;
+    ids.forEach((id) => {
+      this.productsService.remove(id).subscribe({
+        next: () => this.afterBulkDeleteOne(--remaining, hadError),
+        error: () => {
+          hadError = true;
+          this.afterBulkDeleteOne(--remaining, hadError);
+        },
+      });
+    });
+  }
+
+  private afterBulkDeleteOne(remaining: number, hadError: boolean): void {
+    if (remaining > 0) {
+      return;
+    }
+    if (hadError) {
+      this.errorMessage.set('admin.products.deleteError');
+    }
+    this.load();
   }
 
   categoryName(product: Product): string {
@@ -164,6 +298,8 @@ export class ProductsComponent implements OnInit {
     });
     this.selectedPhoto.set(null);
     this.photoPreview.set(null);
+    this.errorMessage.set(null);
+    this.showDialog.set(true);
   }
 
   startEdit(product: Product): void {
@@ -186,11 +322,30 @@ export class ProductsComponent implements OnInit {
     });
     this.selectedPhoto.set(null);
     this.photoPreview.set(product.photoUrl ?? null);
+    this.errorMessage.set(null);
+    this.showDialog.set(true);
   }
 
   cancelEdit(): void {
     this.editingId.set(null);
-    this.startCreate();
+    this.showDialog.set(false);
+    this.startCreateFormOnly();
+  }
+
+  private startCreateFormOnly(): void {
+    this.form.reset({
+      name: '',
+      code: '',
+      categoryId: '',
+      priceType: 'fixed',
+      price: 0,
+      unit: 'pcs',
+      stockQty: 0,
+      visualDescription: '',
+      active: true,
+    });
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
   }
 
   onPhotoSelected(event: Event): void {

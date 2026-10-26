@@ -4,6 +4,7 @@ export interface Category {
   description?: string;
   photoUrl?: string;
   active: boolean;
+  createdAt: string;
 }
 
 export interface CreateCategoryPayload {
@@ -27,6 +28,7 @@ export interface Product {
   visualDescription?: string;
   photoUrl?: string;
   active: boolean;
+  createdAt: string;
 }
 
 export interface CreateProductPayload {

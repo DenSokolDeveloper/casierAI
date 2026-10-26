@@ -10,7 +10,14 @@
     "active": "Aktywny",
     "logout": "Wyloguj",
     "admin": "Panel admina",
-    "backToHome": "Strona główna"
+    "backToHome": "Strona główna",
+    "createdAt": "Utworzono",
+    "paginatorItemsPerPage": "Na stronie:",
+    "paginatorNextPage": "Następna strona",
+    "paginatorPreviousPage": "Poprzednia strona",
+    "paginatorFirstPage": "Pierwsza strona",
+    "paginatorLastPage": "Ostatnia strona",
+    "paginatorOf": "z"
   },
   "auth": {
     "login": {
@@ -131,7 +138,12 @@
       "choosePhoto": "Wybierz zdjęcie",
       "empty": "Brak produktów.",
       "confirmDelete": "Usunąć produkt \"{{name}}\"?",
-      "colActive": "Aktywny"
+      "colActive": "Aktywny",
+      "editTitle": "Edytuj produkt",
+      "searchPlaceholder": "Szukaj po nazwie lub kodzie",
+      "noResults": "Nic nie znaleziono",
+      "deleteSelected": "Usuń zaznaczone ({{count}})",
+      "confirmDeleteSelected": "Usunąć zaznaczone produkty ({{count}})?"
     },
     "categories": {
       "title": "Kategorie",
@@ -144,7 +156,12 @@
       "description": "Opis (opcjonalnie)",
       "photo": "Zdjęcie",
       "empty": "Brak kategorii.",
-      "confirmDelete": "Usunąć kategorię \"{{name}}\"?"
+      "confirmDelete": "Usunąć kategorię \"{{name}}\"?",
+      "editTitle": "Edytuj kategorię",
+      "searchPlaceholder": "Szukaj po nazwie",
+      "noResults": "Nic nie znaleziono",
+      "deleteSelected": "Usuń zaznaczone ({{count}})",
+      "confirmDeleteSelected": "Usunąć zaznaczone kategorie ({{count}})?"
     },
     "users": {
       "title": "Pracownicy",

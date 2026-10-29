@@ -48,6 +48,7 @@
     </div>
 
     <mat-card class="table-card">
+      <div class="table-scroll">
       <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
         <ng-container matColumnDef="select">
           <th mat-header-cell *matHeaderCellDef>
@@ -144,6 +145,7 @@
           <td [attr.colspan]="displayedColumns.length">{{ 'admin.products.noResults' | translate }}</td>
         </tr>
       </table>
+      </div>
 
       <mat-paginator
         [pageSizeOptions]="[10, 25, 50, 100]"

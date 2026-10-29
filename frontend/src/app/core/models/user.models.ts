@@ -6,6 +6,7 @@ export interface ManagedUser {
   name: string;
   role: UserRole;
   active: boolean;
+  createdAt: string;
 }
 
 export interface CreateUserPayload {
@@ -13,4 +14,11 @@ export interface CreateUserPayload {
   password: string;
   name: string;
   role: UserRole;
+}
+
+export interface UpdateUserPayload {
+  email?: string;
+  password?: string;
+  name?: string;
+  role?: UserRole;
 }

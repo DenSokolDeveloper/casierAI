@@ -12,6 +12,7 @@ import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { User, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
 
 const SALT_ROUNDS = 10;
@@ -101,6 +102,40 @@ export class UsersService implements OnModuleInit {
 
   async findOne(id: string, shopId: Types.ObjectId) {
     const user = await this.userModel.findOne({ _id: id, shopId }).select('-passwordHash').exec();
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    return user;
+  }
+
+  async update(id: string, dto: UpdateUserDto, shopId: Types.ObjectId) {
+    if (dto.email) {
+      const existing = await this.userModel
+        .findOne({ email: dto.email, _id: { $ne: id } })
+        .exec();
+      if (existing) {
+        throw new ConflictException(`User with email ${dto.email} already exists`);
+      }
+    }
+
+    const update: Record<string, unknown> = {};
+    if (dto.name !== undefined) {
+      update.name = dto.name;
+    }
+    if (dto.email !== undefined) {
+      update.email = dto.email;
+    }
+    if (dto.role !== undefined) {
+      update.role = dto.role;
+    }
+    if (dto.password) {
+      update.passwordHash = await bcrypt.hash(dto.password, SALT_ROUNDS);
+    }
+
+    const user = await this.userModel
+      .findOneAndUpdate({ _id: id, shopId }, { $set: update }, { new: true })
+      .select('-passwordHash')
+      .exec();
     if (!user) {
       throw new NotFoundException(`User ${id} not found`);
     }

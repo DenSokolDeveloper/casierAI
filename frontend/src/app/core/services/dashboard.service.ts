@@ -18,15 +18,16 @@ export class DashboardService {
     return this.http.get<DashboardSummary>(`${this.baseUrl}/summary`);
   }
 
-  getSalesByDay(days = 7): Observable<SalesByDayPoint[]> {
+  // days === null requests "all time" - the param is simply left off.
+  getSalesByDay(days: number | null = 7): Observable<SalesByDayPoint[]> {
     return this.http.get<SalesByDayPoint[]>(`${this.baseUrl}/sales-by-day`, {
-      params: { days },
+      params: days !== null ? { days } : {},
     });
   }
 
-  getTopProducts(days = 7, limit = 5): Observable<TopProduct[]> {
+  getTopProducts(days: number | null = 7, limit = 5): Observable<TopProduct[]> {
     return this.http.get<TopProduct[]>(`${this.baseUrl}/top-products`, {
-      params: { days, limit },
+      params: days !== null ? { days, limit } : { limit },
     });
   }
 

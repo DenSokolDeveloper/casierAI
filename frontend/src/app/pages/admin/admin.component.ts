@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -14,7 +13,6 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
     RouterLinkActive,
     RouterOutlet,
     MatToolbarModule,
-    MatTabsModule,
     MatIconModule,
     MatButtonModule,
     TranslatePipe,

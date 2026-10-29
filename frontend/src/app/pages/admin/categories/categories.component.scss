@@ -128,7 +128,12 @@
 
   .table-card {
     padding: 0;
-    overflow-x: auto;
+
+    // Only the table scrolls sideways - mat-paginator sits outside this
+    // wrapper so it stays put instead of sliding offscreen with the table.
+    .table-scroll {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;

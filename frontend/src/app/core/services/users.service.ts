@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateUserPayload, ManagedUser } from '../models/user.models';
+import { CreateUserPayload, ManagedUser, UpdateUserPayload } from '../models/user.models';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
@@ -15,6 +15,10 @@ export class UsersService {
 
   create(payload: CreateUserPayload): Observable<ManagedUser> {
     return this.http.post<ManagedUser>(this.baseUrl, payload);
+  }
+
+  update(id: string, payload: UpdateUserPayload): Observable<ManagedUser> {
+    return this.http.patch<ManagedUser>(`${this.baseUrl}/${id}`, payload);
   }
 
   remove(id: string): Observable<void> {

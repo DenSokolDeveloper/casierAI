@@ -18,20 +18,24 @@ export class DashboardController {
     return this.dashboardService.getSummary(user.shopId);
   }
 
+  // No "days" query param means "all time" - there's no fixed trailing
+  // window to compute, so the service is given null instead of a number.
   @Get('sales-by-day')
   salesByDay(
-    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+    @Query('days') daysParam: string | undefined,
     @CurrentUser() user: AuthenticatedUser,
   ) {
+    const days = daysParam !== undefined ? parseInt(daysParam, 10) : null;
     return this.dashboardService.getSalesByDay(days, user.shopId);
   }
 
   @Get('top-products')
   topProducts(
-    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+    @Query('days') daysParam: string | undefined,
     @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
     @CurrentUser() user: AuthenticatedUser,
   ) {
+    const days = daysParam !== undefined ? parseInt(daysParam, 10) : null;
     return this.dashboardService.getTopProducts(days, limit, user.shopId);
   }
 

@@ -11,36 +11,34 @@
       </a>
     </mat-toolbar>
 
-    <nav mat-tab-nav-bar [tabPanel]="tabPanel" class="admin-tabs">
-    <a mat-tab-link routerLink="dashboard" routerLinkActive #dashboardLink="routerLinkActive" [active]="dashboardLink.isActive">
-      <mat-icon>dashboard</mat-icon>
-      {{ 'admin.nav.dashboard' | translate }}
-    </a>
-    <a mat-tab-link routerLink="products" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">
-      <mat-icon>inventory_2</mat-icon>
-      {{ 'admin.nav.products' | translate }}
-    </a>
-    <a mat-tab-link routerLink="categories" routerLinkActive #categoriesLink="routerLinkActive" [active]="categoriesLink.isActive">
-      <mat-icon>category</mat-icon>
-      {{ 'admin.nav.categories' | translate }}
-    </a>
-    <a mat-tab-link routerLink="users" routerLinkActive #usersLink="routerLinkActive" [active]="usersLink.isActive">
-      <mat-icon>groups</mat-icon>
-      {{ 'admin.nav.users' | translate }}
-    </a>
-    <a mat-tab-link routerLink="import" routerLinkActive #importLink="routerLinkActive" [active]="importLink.isActive">
-      <mat-icon>upload_file</mat-icon>
-      {{ 'admin.nav.import' | translate }}
-    </a>
-    <a mat-tab-link routerLink="history" routerLinkActive #historyLink="routerLinkActive" [active]="historyLink.isActive">
-      <mat-icon>receipt_long</mat-icon>
-      {{ 'admin.nav.history' | translate }}
-    </a>
+    <nav class="admin-tabs">
+      <a routerLink="dashboard" routerLinkActive="active" class="admin-tab">
+        <mat-icon>dashboard</mat-icon>
+        {{ 'admin.nav.dashboard' | translate }}
+      </a>
+      <a routerLink="products" routerLinkActive="active" class="admin-tab">
+        <mat-icon>inventory_2</mat-icon>
+        {{ 'admin.nav.products' | translate }}
+      </a>
+      <a routerLink="categories" routerLinkActive="active" class="admin-tab">
+        <mat-icon>category</mat-icon>
+        {{ 'admin.nav.categories' | translate }}
+      </a>
+      <a routerLink="users" routerLinkActive="active" class="admin-tab">
+        <mat-icon>groups</mat-icon>
+        {{ 'admin.nav.users' | translate }}
+      </a>
+      <a routerLink="import" routerLinkActive="active" class="admin-tab">
+        <mat-icon>upload_file</mat-icon>
+        {{ 'admin.nav.import' | translate }}
+      </a>
+      <a routerLink="history" routerLinkActive="active" class="admin-tab">
+        <mat-icon>receipt_long</mat-icon>
+        {{ 'admin.nav.history' | translate }}
+      </a>
     </nav>
   </div>
-  <mat-tab-nav-panel #tabPanel>
-    <div class="admin-content">
-      <router-outlet />
-    </div>
-  </mat-tab-nav-panel>
+  <div class="admin-content">
+    <router-outlet />
+  </div>
 </div>

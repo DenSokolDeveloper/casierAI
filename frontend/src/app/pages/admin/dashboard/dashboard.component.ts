@@ -15,6 +15,8 @@ import {
 } from '../../../core/models/dashboard.models';
 import { UnitLabelPipe } from '../../../core/pipes/unit-label.pipe';
 
+type PeriodId = 7 | 14 | 30 | 90 | 'month' | 'all';
+
 @Component({
   selector: 'app-admin-dashboard',
   imports: [
@@ -46,30 +48,84 @@ export class DashboardComponent implements OnInit {
   protected readonly topProductColumns = ['name', 'qty', 'revenue'];
   protected readonly lowStockColumns = ['name', 'category', 'stockQty'];
 
-  protected static readonly PERIOD_OPTIONS = [7, 14, 30, 90];
+  protected static readonly PERIOD_OPTIONS: PeriodId[] = [7, 14, 30, 90, 'month', 'all'];
   protected readonly periodOptions = DashboardComponent.PERIOD_OPTIONS;
-  protected readonly periodDays = signal(7);
+  protected readonly selectedPeriod = signal<PeriodId>(7);
 
   ngOnInit(): void {
     this.load();
   }
 
-  selectPeriod(days: number): void {
-    if (days === this.periodDays()) {
+  selectPeriod(period: PeriodId): void {
+    if (period === this.selectedPeriod()) {
       return;
     }
-    this.periodDays.set(days);
+    this.selectedPeriod.set(period);
     this.loadPeriod();
+  }
+
+  // 'month' resolves to "day-of-month" days back, which lands exactly on
+  // the 1st - the existing trailing-window endpoints need no change for
+  // it. 'all' has no fixed window, so it passes null (no date filter).
+  private resolveDays(period: PeriodId): number | null {
+    if (period === 'all') {
+      return null;
+    }
+    if (period === 'month') {
+      return new Date().getDate();
+    }
+    return period;
+  }
+
+  protected isNumericPeriod(period: PeriodId): period is 7 | 14 | 30 | 90 {
+    return typeof period === 'number';
+  }
+
+  protected periodLabelKey(period: PeriodId): string {
+    if (period === 'all') {
+      return 'admin.dashboard.periodAll';
+    }
+    if (period === 'month') {
+      return 'admin.dashboard.periodMonth';
+    }
+    return 'admin.dashboard.periodDays';
+  }
+
+  protected periodLabelParams(period: PeriodId): { days: number } | Record<string, never> {
+    return this.isNumericPeriod(period) ? { days: period } : {};
+  }
+
+  protected chartTitleKey(): string {
+    const period = this.selectedPeriod();
+    if (period === 'all') {
+      return 'admin.dashboard.salesChartTitleAll';
+    }
+    if (period === 'month') {
+      return 'admin.dashboard.salesChartTitleMonth';
+    }
+    return 'admin.dashboard.salesChartTitle';
+  }
+
+  protected topProductsTitleKey(): string {
+    const period = this.selectedPeriod();
+    if (period === 'all') {
+      return 'admin.dashboard.topProductsTitleAll';
+    }
+    if (period === 'month') {
+      return 'admin.dashboard.topProductsTitleMonth';
+    }
+    return 'admin.dashboard.topProductsTitle';
   }
 
   load(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    const days = this.resolveDays(this.selectedPeriod());
 
     forkJoin({
       summary: this.dashboardService.getSummary(),
-      salesByDay: this.dashboardService.getSalesByDay(this.periodDays()),
-      topProducts: this.dashboardService.getTopProducts(this.periodDays(), 5),
+      salesByDay: this.dashboardService.getSalesByDay(days),
+      topProducts: this.dashboardService.getTopProducts(days, 5),
       lowStock: this.dashboardService.getLowStock(),
     }).subscribe({
       next: (result) => {
@@ -89,10 +145,11 @@ export class DashboardComponent implements OnInit {
   private loadPeriod(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    const days = this.resolveDays(this.selectedPeriod());
 
     forkJoin({
-      salesByDay: this.dashboardService.getSalesByDay(this.periodDays()),
-      topProducts: this.dashboardService.getTopProducts(this.periodDays(), 5),
+      salesByDay: this.dashboardService.getSalesByDay(days),
+      topProducts: this.dashboardService.getTopProducts(days, 5),
     }).subscribe({
       next: (result) => {
         this.salesByDay.set(result.salesByDay);

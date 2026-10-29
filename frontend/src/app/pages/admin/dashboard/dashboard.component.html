@@ -42,16 +42,16 @@
         <button
           type="button"
           class="period-btn"
-          [class.active]="periodDays() === period"
+          [class.active]="selectedPeriod() === period"
           (click)="selectPeriod(period)"
         >
-          {{ 'admin.dashboard.periodDays' | translate: { days: period } }}
+          {{ periodLabelKey(period) | translate: periodLabelParams(period) }}
         </button>
       }
     </div>
 
     <mat-card class="chart-section">
-      <h2>{{ 'admin.dashboard.salesChartTitle' | translate: { days: periodDays() } }}</h2>
+      <h2>{{ chartTitleKey() | translate: periodLabelParams(selectedPeriod()) }}</h2>
       @if (salesByDay().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noChartData' | translate }}</p>
       } @else {
@@ -69,7 +69,7 @@
     </mat-card>
 
     <mat-card class="list-section">
-      <h2>{{ 'admin.dashboard.topProductsTitle' | translate: { days: periodDays() } }}</h2>
+      <h2>{{ topProductsTitleKey() | translate: periodLabelParams(selectedPeriod()) }}</h2>
       @if (topProducts().length === 0) {
         <p class="empty">{{ 'admin.dashboard.noSales' | translate }}</p>
       } @else {

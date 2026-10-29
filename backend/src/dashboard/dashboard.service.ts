@@ -60,11 +60,16 @@ export class DashboardService {
     };
   }
 
-  async getSalesByDay(days: number, shopId: Types.ObjectId) {
-    const start = daysAgo(days - 1);
+  // days === null means "all time" - there's no fixed trailing window, so
+  // the match skips the createdAt filter entirely instead of a $gte bound.
+  async getSalesByDay(days: number | null, shopId: Types.ObjectId) {
+    const match: Record<string, unknown> = { shopId };
+    if (days !== null) {
+      match.createdAt = { $gte: daysAgo(days - 1) };
+    }
 
     const rows = await this.transactionModel.aggregate([
-      { $match: { shopId, createdAt: { $gte: start } } },
+      { $match: match },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'UTC' } },
@@ -72,7 +77,18 @@ export class DashboardService {
           count: { $sum: 1 },
         },
       },
+      { $sort: { _id: 1 } },
     ]);
+
+    if (days === null) {
+      // All time has no fixed window to zero-pad against - just return
+      // the days that actually had sales, oldest first.
+      return rows.map((row) => ({
+        date: row._id as string,
+        total: round2(row.total),
+        count: row.count,
+      }));
+    }
 
     const byDate = new Map(rows.map((row) => [row._id as string, row]));
     const series: Array<{ date: string; total: number; count: number }> = [];
@@ -85,11 +101,14 @@ export class DashboardService {
     return series;
   }
 
-  async getTopProducts(days: number, limit: number, shopId: Types.ObjectId) {
-    const start = daysAgo(days - 1);
+  async getTopProducts(days: number | null, limit: number, shopId: Types.ObjectId) {
+    const match: Record<string, unknown> = { shopId };
+    if (days !== null) {
+      match.createdAt = { $gte: daysAgo(days - 1) };
+    }
 
     return this.transactionModel.aggregate([
-      { $match: { shopId, createdAt: { $gte: start } } },
+      { $match: match },
       { $unwind: '$items' },
       {
         $group: {

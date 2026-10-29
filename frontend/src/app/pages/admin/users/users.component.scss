@@ -3,9 +3,17 @@
   flex-direction: column;
   gap: 16px;
 
-  h2 {
-    margin: 0;
-    font-size: 1.1rem;
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
   }
 
   .error {
@@ -22,8 +30,44 @@
     color: var(--mat-sys-on-surface-variant);
   }
 
-  .entity-form-card {
+  .filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .search-field {
+      flex: 1 1 240px;
+      max-width: 360px;
+    }
+  }
+
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     padding: 16px;
+    padding-top: max(16px, 8vh);
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+  }
+
+  .dialog-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 24px;
+    --mdc-elevated-card-container-elevation: var(--mat-sys-level3);
+    box-shadow: var(--mat-sys-level3);
+
+    h3 {
+      margin: 0 0 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
   }
 
   .entity-form {
@@ -37,12 +81,20 @@
 
     .actions {
       grid-column: 1 / -1;
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
     }
   }
 
   .table-card {
     padding: 0;
-    overflow-x: auto;
+
+    // Only the table scrolls sideways - mat-paginator sits outside this
+    // wrapper so it stays put instead of sliding offscreen with the table.
+    .table-scroll {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;
@@ -55,6 +107,25 @@
 
     .row-actions {
       white-space: nowrap;
+    }
+
+    .mat-column-select {
+      width: 44px;
+      padding: 0 0 0 12px;
+    }
+
+    .selected-row {
+      background: var(--mat-sys-primary-container);
+    }
+
+    .no-data-row td {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    mat-paginator {
+      border-top: 1px solid var(--mat-sys-outline-variant);
     }
   }
 }
